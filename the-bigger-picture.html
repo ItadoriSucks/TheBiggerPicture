@@ -259,6 +259,62 @@
   .swatches { display: flex; gap: 5px; }
   .swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--rule-strong); }
 
+  /* ---- Brand DNA Modal ---- */
+  .brand-modal-overlay {
+    position: fixed; inset: 0; z-index: 100;
+    background: rgba(26,22,20,0.55); backdrop-filter: blur(4px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 20px;
+  }
+  .brand-modal {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 20px; width: 100%; max-width: 460px;
+    max-height: 90vh; display: flex; flex-direction: column;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.18);
+    animation: scaleIn 0.2s ease both;
+  }
+  .brand-modal-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 22px 26px 18px; border-bottom: 1px solid var(--rule);
+    flex-shrink: 0;
+  }
+  .brand-modal-header h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 20px; letter-spacing: -0.02em; }
+  .brand-modal-close { appearance: none; background: none; border: 0; color: var(--ink-faint); cursor: pointer; font-size: 20px; padding: 2px 6px; border-radius: 6px; transition: all 0.15s; line-height: 1; }
+  .brand-modal-close:hover { background: var(--rule); color: var(--ink); }
+  .brand-modal-body { overflow-y: auto; padding: 24px 26px; display: flex; flex-direction: column; gap: 22px; flex: 1; }
+  .brand-field { display: flex; flex-direction: column; gap: 7px; }
+  .brand-field-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); font-weight: 500; }
+  .brand-field-input { padding: 11px 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 10px; font-family: inherit; font-size: 14px; color: var(--ink); transition: border-color 0.15s; width: 100%; }
+  .brand-field-input:focus { outline: none; border-color: var(--ink); }
+  .brand-field-input::placeholder { color: var(--ink-faint); }
+  .brand-voice-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .brand-voice-opt { appearance: none; background: var(--bg); border: 1.5px solid var(--rule); border-radius: 10px; padding: 11px 14px; cursor: pointer; font-family: inherit; font-size: 13px; color: var(--ink-soft); text-align: left; transition: all 0.15s; }
+  .brand-voice-opt:hover { border-color: var(--rule-strong); color: var(--ink); }
+  .brand-voice-opt.selected { border-color: var(--ink); background: var(--ink); color: var(--bg); }
+  .brand-color-presets { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 12px; }
+  .brand-color-preset { width: 36px; height: 36px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; overflow: hidden; display: flex; flex-direction: column; }
+  .brand-color-preset:hover, .brand-color-preset.selected { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--ink); }
+  .brand-color-preset-top { flex: 1; }
+  .brand-color-preset-bot { height: 10px; }
+  .brand-custom-colors { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .brand-custom-color { display: flex; flex-direction: column; gap: 6px; }
+  .brand-custom-color label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; }
+  .brand-custom-color-row { display: flex; gap: 8px; align-items: center; }
+  .brand-logo-drop { border: 2px dashed var(--rule-strong); border-radius: 12px; padding: 22px 16px; text-align: center; cursor: pointer; transition: all 0.18s; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+  .brand-logo-drop:hover { border-color: var(--accent); background: var(--accent-soft); }
+  .brand-logo-drop svg { opacity: 0.35; }
+  .brand-logo-drop span { font-size: 13px; color: var(--ink-soft); }
+  .brand-logo-preview-wrap { display: flex; align-items: center; gap: 14px; background: var(--bg); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; }
+  .brand-logo-preview-img { width: 56px; height: 56px; object-fit: contain; border-radius: 8px; background: var(--rule); }
+  .brand-logo-preview-name { flex: 1; font-size: 13px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .brand-logo-remove { appearance: none; background: none; border: 0; color: var(--ink-faint); cursor: pointer; font-size: 20px; padding: 2px 6px; }
+  .brand-logo-remove:hover { color: var(--accent); }
+  .brand-modal-footer { padding: 18px 26px; border-top: 1px solid var(--rule); flex-shrink: 0; }
+  .brand-save-btn { width: 100%; appearance: none; background: var(--ink); color: var(--bg); border: 0; padding: 15px; border-radius: 100px; font-family: 'Fraunces', serif; font-size: 17px; cursor: pointer; transition: all 0.18s; }
+  .brand-save-btn:hover { background: var(--accent); }
+  /* Brand logo mini when image is uploaded */
+  .brand-logo-mini img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
+
   /* ---- Demo Mode ---- */
   .demo-page { max-width: 800px; margin: 0 auto; padding: 52px 48px 96px; animation: fadeUp 0.4s ease both; }
   .demo-page[hidden] { display: none; }
@@ -750,22 +806,98 @@
       </div>
       <div class="brand-row">
         <span class="brand-label">Colors</span>
-        <span class="swatches">
+        <span class="swatches" id="brand-swatches-display">
           <span class="swatch" style="background:#1A1614"></span>
           <span class="swatch" style="background:#DD4B25"></span>
-          <span class="swatch" style="background:#6BB39A"></span>
-          <span class="swatch" style="background:#F5F1EA"></span>
         </span>
       </div>
       <div class="brand-row">
         <span class="brand-label">Voice</span>
-        <span class="brand-value">Warm, confident</span>
+        <span class="brand-value" id="brand-voice-display">Warm, confident</span>
       </div>
       <div class="brand-row">
         <span class="brand-label">City</span>
         <span class="brand-value" id="brand-city-display">—</span>
       </div>
     </aside>
+  </div>
+
+  <!-- Brand DNA Modal -->
+  <div class="brand-modal-overlay" id="brand-modal-overlay" hidden>
+    <div class="brand-modal">
+      <div class="brand-modal-header">
+        <h3>Brand DNA</h3>
+        <button class="brand-modal-close" id="brand-modal-close" aria-label="Close">&#x2715;</button>
+      </div>
+      <div class="brand-modal-body">
+
+        <!-- Logo -->
+        <div class="brand-field">
+          <span class="brand-field-label">Logo</span>
+          <label class="brand-logo-drop" id="brand-logo-drop">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span id="brand-logo-drop-label">Drop your logo or click to upload</span>
+            <input type="file" id="brand-logo-upload" accept="image/*" style="display:none">
+          </label>
+          <div class="brand-logo-preview-wrap" id="brand-logo-preview-wrap" hidden>
+            <img class="brand-logo-preview-img" id="brand-logo-preview-img" src="" alt="Logo">
+            <span class="brand-logo-preview-name" id="brand-logo-preview-name"></span>
+            <button class="brand-logo-remove" id="brand-logo-remove">&#x2715;</button>
+          </div>
+        </div>
+
+        <!-- Company name -->
+        <div class="brand-field">
+          <label class="brand-field-label" for="brand-name-input">Company name</label>
+          <input class="brand-field-input" id="brand-name-input" type="text" placeholder="e.g. Marigold &amp; Co." maxlength="48">
+        </div>
+
+        <!-- Location -->
+        <div class="brand-field">
+          <label class="brand-field-label" for="brand-location-input">Location / City</label>
+          <input class="brand-field-input" id="brand-location-input" type="text" placeholder="e.g. Seattle, WA" maxlength="48">
+        </div>
+
+        <!-- Voice -->
+        <div class="brand-field">
+          <span class="brand-field-label">Brand voice</span>
+          <div class="brand-voice-grid">
+            <button class="brand-voice-opt selected" data-voice="warm">Warm &amp; confident</button>
+            <button class="brand-voice-opt" data-voice="bold">Bold &amp; energetic</button>
+            <button class="brand-voice-opt" data-voice="friendly">Friendly &amp; local</button>
+            <button class="brand-voice-opt" data-voice="professional">Professional &amp; clean</button>
+            <button class="brand-voice-opt" data-voice="playful">Playful &amp; fun</button>
+            <button class="brand-voice-opt" data-voice="minimal">Minimal &amp; sharp</button>
+          </div>
+        </div>
+
+        <!-- Colors -->
+        <div class="brand-field">
+          <span class="brand-field-label">Brand colors</span>
+          <div class="brand-color-presets" id="brand-color-presets"></div>
+          <div class="brand-custom-colors">
+            <div class="brand-custom-color">
+              <label for="brand-color-primary">Primary</label>
+              <div class="brand-custom-color-row">
+                <input class="color-swatch-input" type="color" id="brand-color-primary" value="#1A1614">
+                <input class="color-hex editor-input" id="brand-hex-primary" type="text" maxlength="7" placeholder="#1A1614">
+              </div>
+            </div>
+            <div class="brand-custom-color">
+              <label for="brand-color-accent">Accent</label>
+              <div class="brand-custom-color-row">
+                <input class="color-swatch-input" type="color" id="brand-color-accent" value="#DD4B25">
+                <input class="color-hex editor-input" id="brand-hex-accent" type="text" maxlength="7" placeholder="#DD4B25">
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+      <div class="brand-modal-footer">
+        <button class="brand-save-btn" id="brand-save-btn">Save brand</button>
+      </div>
+    </div>
   </div>
 </main>
 
@@ -1181,11 +1313,14 @@
     const img  = (sel && e.imageUrl)
       ? `<img class="poster-bg-img" src="${e.imageUrl}" style="opacity:${e.imageOpacity/100}" alt="">`
       : '';
+    const logoImg = state.brand.logoUrl
+      ? `<img class="poster-logo-img" src="${state.brand.logoUrl}" alt="logo">`
+      : '';
     const li   = (sel && e.layout >= 0) ? e.layout : idx;
 
     // Layout A: Bold full-bleed color, large display headline
     if (li === 0) return `<div class="poster poster--a" style="background:${bg};color:${fg};position:relative">
-      ${img}
+      ${img}${logoImg}
       <div class="eyebrow" style="opacity:0.8">${esc(c.eyebrow)}</div>
       <div class="head">${esc(c.head)}<br><em>this</em><br>${esc(c.weekword)}</div>
       <div class="meta" style="border-top-color:${fg}55">
@@ -1197,7 +1332,7 @@
 
     // Layout B: Split panel light/dark
     if (li === 1) return `<div class="poster poster--b" style="background:${bg};position:relative">
-      ${img}
+      ${img}${logoImg}
       <div class="top" style="background:${fg};color:${bg}">
         <div class="label" style="color:${ac}">${esc(state.businessName)}</div>
         <div class="top-head">${esc(c.head)}.</div>
@@ -1213,7 +1348,7 @@
 
     // Layout C: Geometric with ribbon tag
     return `<div class="poster poster--c" style="background:${bg};color:${fg};position:relative">
-      ${img}
+      ${img}${logoImg}
       <div class="ribbon" style="background:${fg};color:${bg}">${esc(c.ribbon)}</div>
       <div class="head-c" style="color:${fg}">${esc(c.head)} <em style="color:${ac}">${esc(c.hereword)}</em></div>
       <div class="meta-c" style="border-top-color:${fg}55;color:${fg}99">
@@ -1768,6 +1903,177 @@
     closeEditor();
     showToast('Changes applied to your design.');
   });
+
+  // ---- Brand DNA Modal ----
+  state.brand = {
+    name: 'Marigold & Co.', logoUrl: '', logoName: '',
+    voice: 'warm', primaryColor: '#1A1614', accentColor: '#DD4B25', location: '',
+  };
+
+  const VOICE_LABELS = {
+    warm: 'Warm, confident', bold: 'Bold, energetic',
+    friendly: 'Friendly, local', professional: 'Professional, clean',
+    playful: 'Playful, fun', minimal: 'Minimal, sharp',
+  };
+
+  function buildBrandColorPresets() {
+    const container = document.getElementById('brand-color-presets');
+    container.innerHTML = '';
+    PALETTES.forEach(pal => {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.className = 'brand-color-preset';
+      dot.title = `${pal.bg} / ${pal.ac}`;
+      dot.innerHTML = `<div class="brand-color-preset-top" style="background:${pal.bg}"></div><div class="brand-color-preset-bot" style="background:${pal.ac}"></div>`;
+      dot.addEventListener('click', () => {
+        setBrandColor('primary', pal.bg);
+        setBrandColor('accent', pal.ac);
+        syncBrandPresetHighlight();
+      });
+      container.appendChild(dot);
+    });
+    syncBrandPresetHighlight();
+  }
+
+  function syncBrandPresetHighlight() {
+    document.querySelectorAll('.brand-color-preset').forEach((dot, i) => {
+      const pal = PALETTES[i];
+      dot.classList.toggle('selected', pal.bg === state.brand.primaryColor && pal.ac === state.brand.accentColor);
+    });
+  }
+
+  function setBrandColor(key, hex) {
+    document.getElementById('brand-color-' + key).value = hex;
+    document.getElementById('brand-hex-' + key).value   = hex;
+    if (key === 'primary') state.brand.primaryColor = hex;
+    else state.brand.accentColor = hex;
+  }
+
+  function openBrandModal() {
+    const b = state.brand;
+    document.getElementById('brand-name-input').value     = b.name;
+    document.getElementById('brand-location-input').value = b.location;
+    setBrandColor('primary', b.primaryColor);
+    setBrandColor('accent',  b.accentColor);
+    buildBrandColorPresets();
+
+    document.querySelectorAll('.brand-voice-opt').forEach(btn =>
+      btn.classList.toggle('selected', btn.dataset.voice === b.voice)
+    );
+
+    const drop = document.getElementById('brand-logo-drop');
+    const wrap = document.getElementById('brand-logo-preview-wrap');
+    if (b.logoUrl) {
+      document.getElementById('brand-logo-preview-img').src = b.logoUrl;
+      document.getElementById('brand-logo-preview-name').textContent = b.logoName;
+      wrap.hidden = false;
+      drop.style.display = 'none';
+    } else {
+      wrap.hidden = true;
+      drop.style.display = '';
+    }
+
+    document.getElementById('brand-modal-overlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeBrandModal() {
+    document.getElementById('brand-modal-overlay').hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function saveBrand() {
+    const b = state.brand;
+    b.name     = document.getElementById('brand-name-input').value.trim() || b.name;
+    b.location = document.getElementById('brand-location-input').value.trim();
+    state.businessName = b.name;
+    if (b.location) state.city = b.location;
+    updateBrandCard();
+    closeBrandModal();
+    showToast('Brand saved.');
+  }
+
+  function updateBrandCard() {
+    const b = state.brand;
+    document.getElementById('brand-name-display').textContent  = b.name;
+    document.getElementById('brand-city-display').textContent  = b.location || '—';
+    document.getElementById('brand-voice-display').textContent = VOICE_LABELS[b.voice] || b.voice;
+    document.getElementById('brand-swatches-display').innerHTML =
+      `<span class="swatch" style="background:${b.primaryColor}"></span>` +
+      `<span class="swatch" style="background:${b.accentColor}"></span>`;
+    const logoMini = document.getElementById('brand-logo-mini');
+    if (b.logoUrl) {
+      logoMini.innerHTML = `<img src="${b.logoUrl}" alt="" style="width:100%;height:100%;object-fit:contain;border-radius:4px">`;
+    } else {
+      logoMini.textContent = b.name[0] || 'B';
+    }
+  }
+
+  // Voice buttons
+  document.querySelectorAll('.brand-voice-opt').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.brand-voice-opt').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      state.brand.voice = btn.dataset.voice;
+    });
+  });
+
+  // Color pickers
+  ['primary', 'accent'].forEach(key => {
+    const swatch = document.getElementById('brand-color-' + key);
+    const hex    = document.getElementById('brand-hex-' + key);
+    swatch.addEventListener('input', () => {
+      hex.value = swatch.value;
+      if (key === 'primary') state.brand.primaryColor = swatch.value;
+      else state.brand.accentColor = swatch.value;
+      syncBrandPresetHighlight();
+    });
+    hex.addEventListener('change', () => {
+      const v = hex.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+        swatch.value = v;
+        if (key === 'primary') state.brand.primaryColor = v;
+        else state.brand.accentColor = v;
+        syncBrandPresetHighlight();
+      }
+    });
+  });
+
+  // Logo upload
+  const brandLogoUpload = document.getElementById('brand-logo-upload');
+  document.getElementById('brand-logo-drop').addEventListener('click', () => brandLogoUpload.click());
+  brandLogoUpload.addEventListener('change', () => {
+    if (brandLogoUpload.files[0]) loadBrandLogo(brandLogoUpload.files[0]);
+  });
+  function loadBrandLogo(file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state.brand.logoUrl  = ev.target.result;
+      state.brand.logoName = file.name;
+      document.getElementById('brand-logo-preview-img').src             = ev.target.result;
+      document.getElementById('brand-logo-preview-name').textContent    = file.name;
+      document.getElementById('brand-logo-preview-wrap').hidden         = false;
+      document.getElementById('brand-logo-drop').style.display          = 'none';
+    };
+    reader.readAsDataURL(file);
+  }
+  document.getElementById('brand-logo-remove').addEventListener('click', e => {
+    e.stopPropagation();
+    state.brand.logoUrl = '';
+    state.brand.logoName = '';
+    brandLogoUpload.value = '';
+    document.getElementById('brand-logo-preview-wrap').hidden  = true;
+    document.getElementById('brand-logo-drop').style.display   = '';
+  });
+
+  // Close on backdrop click
+  document.getElementById('brand-modal-overlay').addEventListener('click', e => {
+    if (e.target === document.getElementById('brand-modal-overlay')) closeBrandModal();
+  });
+
+  document.querySelector('.brand-edit').addEventListener('click', openBrandModal);
+  document.getElementById('brand-modal-close').addEventListener('click', closeBrandModal);
+  document.getElementById('brand-save-btn').addEventListener('click', saveBrand);
 
   // ---- Toast ----
   let toastTimer;

@@ -429,9 +429,10 @@
   .ig-mock-header { padding: 8px 10px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid #eee; }
   .ig-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 12px; color: var(--accent); }
   .ig-name { font-weight: 700; font-size: 11px; font-family: -apple-system, sans-serif; }
-  .ig-img-area { width: 100%; aspect-ratio: 1/1; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-  .ig-img-area.before { background: #e8e8e8; }
+  .ig-img-area { width: 100%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .ig-img-area.before { aspect-ratio: 1/1; background: #e8e8e8; }
   .ig-img-area.before span { color: #aaa; font-size: 11px; font-family: -apple-system, sans-serif; }
+  #ba-img-after { aspect-ratio: 4/5; position: relative; display: block; }
   .ig-caption { padding: 8px 10px; font-family: -apple-system, sans-serif; line-height: 1.4; }
 
   .variant-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
@@ -678,6 +679,31 @@
   .tpbtn:hover, .tpbtn.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
   .tpbtn.del:hover { background: var(--accent); border-color: var(--accent); color: white; }
 
+  /* ---- Feedback Page ---- */
+  .fb-thread { max-width: 680px; margin: 0 auto; }
+  .fb-thread-header { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; border-bottom: 2px solid var(--ink); margin-bottom: 24px; }
+  .fb-thread-name { font-family: 'Fraunces', serif; font-size: 22px; font-weight: 400; letter-spacing: -0.01em; }
+  .fb-count { font-size: 13px; color: var(--ink-faint); }
+  .fb-comment { background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 14px; padding: 16px 20px; margin-bottom: 12px; animation: fadeUp 0.3s ease both; }
+  .fb-comment-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .fb-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); color: var(--accent); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 14px; font-weight: 500; flex-shrink: 0; }
+  .fb-author { font-weight: 700; font-size: 14px; }
+  .fb-time { font-size: 12px; color: var(--ink-faint); margin-left: auto; }
+  .fb-del { background: none; border: none; color: var(--ink-faint); cursor: pointer; font-size: 16px; padding: 2px 6px; border-radius: 6px; transition: all 0.15s; line-height: 1; }
+  .fb-del:hover { color: var(--accent); background: var(--accent-soft); }
+  .fb-body { font-size: 14px; line-height: 1.65; color: var(--ink); white-space: pre-wrap; word-break: break-word; }
+  .fb-form { background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 16px; padding: 24px; margin-top: 24px; }
+  .fb-form h4 { font-family: 'Fraunces', serif; font-size: 19px; margin-bottom: 16px; font-weight: 400; }
+  .fb-input, .fb-textarea { width: 100%; padding: 10px 14px; background: var(--bg); border: 1px solid var(--rule-strong); border-radius: 8px; font-family: inherit; font-size: 14px; color: var(--ink); box-sizing: border-box; }
+  .fb-input { margin-bottom: 10px; }
+  .fb-input:focus, .fb-textarea:focus { outline: none; border-color: var(--ink); }
+  .fb-textarea { resize: vertical; min-height: 90px; }
+  .fb-form-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; }
+  .fb-charcount { font-size: 12px; color: var(--ink-faint); }
+  .fb-submit { appearance: none; background: var(--ink); color: var(--bg); border: none; border-radius: 100px; padding: 10px 26px; font-family: 'Fraunces', serif; font-size: 16px; cursor: pointer; transition: all 0.15s; }
+  .fb-submit:hover { background: var(--accent); transform: translateY(-1px); }
+  .fb-empty { text-align: center; padding: 48px 0; color: var(--ink-faint); font-size: 15px; border: 1px dashed var(--rule-strong); border-radius: 14px; margin-bottom: 8px; }
+
   @media (max-width: 900px) {
     .topbar { padding: 16px 20px; }
     .stepper .step-label { display: none; }
@@ -688,6 +714,7 @@
     .poster { width: 100%; max-width: 400px; height: auto; aspect-ratio: 4/5; }
   }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 <body>
 
@@ -713,6 +740,7 @@
   </div>
 
   <div class="topbar-right">
+    <button class="demo-btn" id="feedback-nav-btn" style="background:var(--bg-elevated);color:var(--ink-soft);border-color:var(--rule-strong)">Feedback</button>
     <button class="demo-btn" id="demo-mode-btn">⚡ Demo Mode</button>
     <div class="credits-pill"><strong>Full</strong> Access</div>
   </div>
@@ -1236,6 +1264,29 @@
   </div>
 </div>
 
+<!-- ===== FEEDBACK PAGE ===== -->
+<div class="page" id="page-feedback" hidden>
+  <button class="back-link" id="feedback-back-btn">← Back</button>
+  <h2 class="editor-title display" style="margin-bottom:8px">Community <em>Feedback.</em></h2>
+  <p style="color:var(--ink-soft);margin-bottom:36px;font-size:15px">Share thoughts, ideas, or bugs. Comments are saved in your browser.</p>
+  <div class="fb-thread">
+    <div class="fb-thread-header">
+      <span class="fb-thread-name">&#x1F4AC; Feedback</span>
+      <span class="fb-count" id="fb-count">0 comments</span>
+    </div>
+    <div id="fb-list"></div>
+    <div class="fb-form">
+      <h4>Leave a comment</h4>
+      <input class="fb-input" id="fb-name" type="text" placeholder="Your name" maxlength="50" autocomplete="name">
+      <textarea class="fb-textarea" id="fb-text" placeholder="Share your feedback or ideas&#x2026;" maxlength="500"></textarea>
+      <div class="fb-form-footer">
+        <span class="fb-charcount" id="fb-charcount">500 characters left</span>
+        <button class="fb-submit" id="fb-submit">Post comment</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <!-- ===== LOADING ===== -->
 <div class="loading-overlay" id="loading" hidden>
   <div class="loading-card">
@@ -1257,6 +1308,7 @@
     website: 'https://your-website.com',
     baVisible: false, gateOpen: false, seed: 1,
     edits: { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 },
+    snapshots: {},
   };
 
   // ---- Seeded RNG (xorshift32) ----
@@ -1681,6 +1733,9 @@
   async function runGeneration() {
     // New seed every generation = fresh palettes, headlines, and phrases every time
     state.seed = (Date.now() ^ (Math.random() * 0xffffffff | 0)) >>> 0 || 1;
+    state.edits = { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 };
+    state.snapshots = {};
+    ds._editingVariant = -1; boardEls = []; boardSel = null; ds._savedImg = null;
     const overlay = document.getElementById('loading');
     const status  = document.getElementById('loading-status');
     document.getElementById('page-create').hidden = true;
@@ -1706,14 +1761,23 @@
 
   // ---- Results render ----
   function renderPreview() {
-    document.getElementById('preview-stage').innerHTML = makeOutput(state.selected);
+    const snap = state.snapshots[state.selected];
+    if (snap) {
+      document.getElementById('preview-stage').innerHTML =
+        `<div style="display:flex;justify-content:center"><img src="${snap}" style="max-width:400px;width:100%;border-radius:8px;display:block;box-shadow:0 8px 32px rgba(0,0,0,0.12)" alt="Design preview"></div>`;
+    } else {
+      document.getElementById('preview-stage').innerHTML = makeOutput(state.selected);
+    }
 
     const strip = document.getElementById('variant-strip');
     strip.innerHTML = '';
     [0, 1, 2].forEach(i => {
       const btn = document.createElement('button');
       btn.className = 'variant-thumb' + (i === state.selected ? ' selected' : '');
-      btn.innerHTML = `<div class="poster-mini">${makePoster(i)}</div>`;
+      const vSnap = state.snapshots[i];
+      btn.innerHTML = vSnap
+        ? `<img src="${vSnap}" style="width:100%;height:100%;object-fit:cover;display:block">`
+        : `<div class="poster-mini">${makePoster(i)}</div>`;
       btn.addEventListener('click', () => { state.selected = i; renderPreview(); });
       strip.appendChild(btn);
     });
@@ -1732,8 +1796,14 @@
     document.getElementById('ba-avatar-after').textContent  = biz[0];
     document.getElementById('ba-name-before').textContent   = handle;
     document.getElementById('ba-name-after').textContent    = handle;
-    document.getElementById('ba-img-after').innerHTML =
-      `<div style="transform:scale(0.55);transform-origin:top left;width:182%;height:182%">${makePoster(state.selected)}</div>`;
+
+    const baAfter = document.getElementById('ba-img-after');
+    if (snap) {
+      baAfter.innerHTML = `<img src="${snap}" style="width:100%;height:100%;object-fit:cover;display:block" alt="After">`;
+    } else {
+      baAfter.innerHTML = `<div style="position:absolute;top:0;left:0;width:200%;height:200%;transform:scale(0.5);transform-origin:top left;pointer-events:none">${makePoster(state.selected)}</div>`;
+    }
+
     document.getElementById('ba-caption-after').textContent  = caps.caption;
     document.getElementById('ba-hashtags-after').textContent = caps.hashtags;
     document.getElementById('results-meta').textContent =
@@ -1786,8 +1856,42 @@
     pill.classList.add('selected');
     state.format = pill.dataset.format;
   });
-  document.getElementById('download-btn').addEventListener('click', () => {
-    showToast(`Variant ${state.selected + 1} saved as ${state.format.toUpperCase()} - Full print pack included`);
+  document.getElementById('download-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('download-btn');
+    const origHTML = btn.innerHTML;
+    btn.textContent = 'Preparing…';
+    btn.disabled = true;
+
+    let dataUrl = state.snapshots[state.selected] || null;
+
+    if (!dataUrl) {
+      // Render the HTML poster offscreen
+      const temp = document.createElement('div');
+      temp.style.cssText = 'position:fixed;left:-9999px;top:0;width:400px;height:500px;overflow:hidden;';
+      temp.innerHTML = makePoster(state.selected);
+      document.body.appendChild(temp);
+      try {
+        const canvas = await html2canvas(temp, {
+          width: 400, height: 500, scale: 2.7,
+          useCORS: true, allowTaint: true, logging: false,
+        });
+        const fmt = state.format === 'jpg' ? 'image/jpeg' : 'image/png';
+        dataUrl = canvas.toDataURL(fmt, 0.92);
+      } catch(e) { console.warn('Download render failed:', e); }
+      document.body.removeChild(temp);
+    }
+
+    btn.innerHTML = origHTML;
+    btn.disabled = false;
+
+    if (!dataUrl) { showToast('Download failed — please try again'); return; }
+
+    const ext = state.format === 'jpg' ? 'jpg' : 'png';
+    const a = document.createElement('a');
+    a.href = dataUrl;
+    a.download = `bigger-picture-v${state.selected + 1}.${ext}`;
+    a.click();
+    showToast('Download started!');
   });
   document.getElementById('post-btn').addEventListener('click', () => {
     showToast('Instagram scheduling - coming in V2!');
@@ -2465,8 +2569,27 @@
     switchEditorTab(tab.dataset.etab);
   });
 
+  async function captureBoard() {
+    const board = document.getElementById('design-board');
+    if (!board || typeof html2canvas === 'undefined') return null;
+    try {
+      const canvas = await html2canvas(board, {
+        width: BOARD_W, height: BOARD_H, scale: 2.7,
+        useCORS: true, allowTaint: true, logging: false, backgroundColor: null,
+      });
+      return canvas.toDataURL('image/png');
+    } catch(e) { console.warn('Board capture failed:', e); return null; }
+  }
+
   document.getElementById('editor-back-btn').addEventListener('click', closeEditor);
-  document.getElementById('editor-apply-btn').addEventListener('click', () => {
+  document.getElementById('editor-apply-btn').addEventListener('click', async () => {
+    const btn = document.getElementById('editor-apply-btn');
+    btn.textContent = 'Saving…';
+    btn.disabled = true;
+    const snap = await captureBoard();
+    if (snap) state.snapshots[state.selected] = snap;
+    btn.textContent = 'Apply & return to results';
+    btn.disabled = false;
     closeEditor();
     showToast('Changes applied to your design.');
   });
@@ -2653,6 +2776,106 @@
   }
 
   document.getElementById('city-select').dispatchEvent(new Event('change'));
+
+  // ---- Feedback Page ----
+  const FB_KEY = 'tbp_feedback';
+  const FB_USER_KEY = 'tbp_fb_user';
+
+  function fbLoadComments() {
+    try { return JSON.parse(localStorage.getItem(FB_KEY)) || []; } catch { return []; }
+  }
+  function fbSaveComments(c) { localStorage.setItem(FB_KEY, JSON.stringify(c)); }
+  function fbSavedUser()     { return localStorage.getItem(FB_USER_KEY) || ''; }
+
+  function fbTimeAgo(ts) {
+    const d = Date.now() - ts;
+    if (d < 60000)    return 'just now';
+    if (d < 3600000)  return `${Math.floor(d/60000)}m ago`;
+    if (d < 86400000) return `${Math.floor(d/3600000)}h ago`;
+    return `${Math.floor(d/86400000)}d ago`;
+  }
+
+  function fbRender() {
+    const comments = fbLoadComments();
+    const list  = document.getElementById('fb-list');
+    const count = document.getElementById('fb-count');
+    count.textContent = comments.length === 1 ? '1 comment' : `${comments.length} comments`;
+
+    if (comments.length === 0) {
+      list.innerHTML = '<div class="fb-empty">No comments yet — be the first to share!</div>';
+      return;
+    }
+
+    const me = fbSavedUser();
+    list.innerHTML = '';
+    comments.slice().reverse().forEach(cm => {
+      const div = document.createElement('div');
+      div.className = 'fb-comment';
+      const canDel = me && cm.author === me;
+      div.innerHTML =
+        `<div class="fb-comment-header">` +
+          `<div class="fb-avatar">${esc(cm.author.trim()[0] || '?')}</div>` +
+          `<span class="fb-author">${esc(cm.author)}</span>` +
+          `<span class="fb-time">${fbTimeAgo(cm.ts)}</span>` +
+          (canDel ? `<button class="fb-del" data-id="${cm.id}" title="Delete comment">&#x2715;</button>` : '') +
+        `</div>` +
+        `<div class="fb-body">${esc(cm.body)}</div>`;
+      list.appendChild(div);
+    });
+
+    list.querySelectorAll('.fb-del').forEach(btn => {
+      btn.addEventListener('click', () => {
+        fbSaveComments(fbLoadComments().filter(c => c.id !== btn.dataset.id));
+        fbRender();
+      });
+    });
+  }
+
+  document.getElementById('fb-text').addEventListener('input', e => {
+    document.getElementById('fb-charcount').textContent =
+      `${500 - e.target.value.length} characters left`;
+  });
+
+  document.getElementById('fb-submit').addEventListener('click', () => {
+    const name = document.getElementById('fb-name').value.trim();
+    const body = document.getElementById('fb-text').value.trim();
+    if (!name) { showToast('Please enter your name'); return; }
+    if (!body) { showToast('Please write a comment first'); return; }
+    localStorage.setItem(FB_USER_KEY, name);
+    const comments = fbLoadComments();
+    comments.push({ id: Date.now().toString(36), author: name, body, ts: Date.now() });
+    fbSaveComments(comments);
+    document.getElementById('fb-text').value = '';
+    document.getElementById('fb-charcount').textContent = '500 characters left';
+    fbRender();
+    showToast('Comment posted!');
+  });
+
+  function openFeedback() {
+    // remember which page we came from so back button works
+    const prev =
+      !document.getElementById('page-results').hidden ? 'results' :
+      !document.getElementById('page-edit').hidden    ? 'edit'    : 'create';
+    document.querySelectorAll('.page').forEach(p => p.hidden = true);
+    document.getElementById('page-feedback').hidden = false;
+    const saved = fbSavedUser();
+    if (saved) document.getElementById('fb-name').value = saved;
+    fbRender();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    document.getElementById('feedback-back-btn').onclick = () => {
+      document.getElementById('page-feedback').hidden = true;
+      if (prev === 'results') {
+        document.getElementById('page-results').hidden = false;
+      } else if (prev === 'edit') {
+        document.getElementById('page-edit').hidden = false;
+      } else {
+        document.getElementById('page-create').hidden = false;
+      }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+  }
+
+  document.getElementById('feedback-nav-btn').addEventListener('click', openFeedback);
 </script>
 </body>
 </html>

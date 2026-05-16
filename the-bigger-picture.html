@@ -636,6 +636,38 @@
   .poster-logo-img { position: absolute; bottom: 44px; left: 36px; width: 60px; height: 60px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 2; pointer-events: none; }
   .poster > * { position: relative; z-index: 1; }
 
+  /* ---- Drawing / Canvas Tools ---- */
+  .canvas-wrap { position: relative; display: inline-block; width: 100%; }
+  #poster-html-layer { display: flex; justify-content: center; }
+  #design-canvas { position: absolute; top: 0; left: 0; z-index: 10; cursor: crosshair; }
+  #text-layer { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 20; pointer-events: none; }
+  .text-el { position: absolute; pointer-events: all; outline: none; cursor: move; border: 1.5px dashed transparent; border-radius: 2px; padding: 2px 5px; white-space: pre; line-height: 1.2; user-select: none; -webkit-user-select: none; }
+  .text-el.tsel { border-color: rgba(221,75,37,0.75); }
+  .text-el:focus { cursor: text; user-select: text; -webkit-user-select: text; }
+
+  /* Draw toolbar */
+  .draw-toolbar { display: flex; align-items: center; gap: 4px; padding: 0 0 12px; flex-wrap: wrap; }
+  .dtool { appearance: none; background: var(--bg-elevated); border: 1.5px solid var(--rule); border-radius: 8px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--ink-soft); transition: all .14s; flex-shrink: 0; padding: 0; }
+  .dtool:hover { border-color: var(--rule-strong); color: var(--ink); }
+  .dtool.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .dtool-sep { width: 1px; height: 24px; background: var(--rule); margin: 0 3px; flex-shrink: 0; }
+  .dtool-color { appearance: none; width: 36px; height: 36px; border: 1.5px solid var(--rule); border-radius: 8px; padding: 3px; cursor: pointer; background: none; flex-shrink: 0; }
+  .dtool-color::-webkit-color-swatch-wrapper { padding: 0; }
+  .dtool-color::-webkit-color-swatch { border: none; border-radius: 4px; }
+  .stroke-row { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--ink-faint); }
+  .stroke-row input[type=range] { width: 64px; -webkit-appearance: none; appearance: none; height: 3px; border-radius: 2px; background: var(--rule-strong); cursor: pointer; }
+  .stroke-row input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: var(--accent); border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,.15); }
+  .stroke-val { min-width: 20px; }
+  .shape-btns { display: flex; gap: 3px; }
+
+  /* Text properties bar */
+  .tprops-bar { display: flex; align-items: center; gap: 6px; background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 10px; padding: 8px 12px; margin-bottom: 10px; flex-wrap: wrap; }
+  .tprops-bar select { padding: 5px 8px; background: var(--bg); border: 1px solid var(--rule); border-radius: 7px; font-size: 13px; color: var(--ink); font-family: inherit; }
+  .tprops-bar input[type=number] { width: 56px; padding: 5px 8px; background: var(--bg); border: 1px solid var(--rule); border-radius: 7px; font-size: 13px; color: var(--ink); font-family: inherit; }
+  .tpbtn { appearance: none; background: none; border: 1.5px solid var(--rule); border-radius: 7px; width: 30px; height: 30px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--ink-soft); transition: all .14s; padding: 0; }
+  .tpbtn:hover, .tpbtn.on { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+  .tpbtn.del:hover { background: var(--accent); border-color: var(--accent); color: white; }
+
   @media (max-width: 900px) {
     .topbar { padding: 16px 20px; }
     .stepper .step-label { display: none; }
@@ -1059,6 +1091,67 @@
   <p class="editor-sub" style="color:var(--ink-soft);margin-bottom:32px">Changes apply live to the preview below.</p>
   <div class="editor-layout">
     <div>
+      <!-- Drawing toolbar -->
+      <div class="draw-toolbar" id="draw-toolbar">
+        <button class="dtool on" data-tool="select" title="Select &amp; move (V)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l3.8 9.8 1.8-3.6 3.6-1.8L2 2z" fill="currentColor"/><path d="M7.2 8.2L11 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="dtool" data-tool="text" title="Add text (T)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 3.5h10M7 3.5V11M4.5 11h5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="dtool" data-tool="brush" title="Freehand brush (B)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M9.5 2l2.5 2.5-6 6c-.8.4-2.5.8-2.5.8s.4-1.7.8-2.5l5.2-6.8z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/><path d="M3 12c.2-.4.6-.8 1-1" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+        </button>
+        <button class="dtool" data-tool="shape" title="Shape (S)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="2" width="10" height="10" rx="1.5" stroke="currentColor" stroke-width="1.4"/></svg>
+        </button>
+        <button class="dtool" data-tool="line" title="Line (L)">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 12L12 2" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <div class="dtool-sep"></div>
+        <input type="color" class="dtool-color" id="draw-color" value="#DD4B25" title="Stroke / fill color">
+        <div class="dtool-sep"></div>
+        <div class="stroke-row">
+          <input type="range" id="stroke-width" min="1" max="24" value="3">
+          <span class="stroke-val" id="stroke-val">3</span>
+        </div>
+        <div class="dtool-sep"></div>
+        <div class="shape-btns" id="shape-btns" style="display:none">
+          <button class="dtool on" data-shape="rect" title="Rectangle">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><rect x="1.5" y="1.5" width="10" height="10" rx="1" stroke="currentColor" stroke-width="1.4"/></svg>
+          </button>
+          <button class="dtool" data-shape="circle" title="Ellipse">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><ellipse cx="6.5" cy="6.5" rx="5" ry="4" stroke="currentColor" stroke-width="1.4"/></svg>
+          </button>
+          <button class="dtool" data-shape="tri" title="Triangle">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M6.5 1.5L12 11.5H1L6.5 1.5z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>
+          </button>
+          <div class="dtool-sep"></div>
+        </div>
+        <button class="dtool" id="undo-draw" title="Undo last stroke">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 6V2M2 6h4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 6C3 3.5 5.5 2 8 2c3 0 5 2 5 5s-2 5-5 5a5 5 0 0 1-3.5-1.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+        <button class="dtool" id="clear-draw" title="Clear all drawing">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 2l10 10M12 2L2 12" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+      <!-- Text properties bar (shown when a text element is selected) -->
+      <div class="tprops-bar" id="tprops-bar" hidden>
+        <select id="tp-font">
+          <option value="'Fraunces',serif">Fraunces</option>
+          <option value="'Manrope',sans-serif">Manrope</option>
+          <option value="Georgia,serif">Georgia</option>
+          <option value="Arial,sans-serif">Arial</option>
+          <option value="'Courier New',monospace">Courier</option>
+        </select>
+        <input type="number" id="tp-size" value="28" min="8" max="160" title="Font size (px)">
+        <button class="tpbtn" id="tp-bold" title="Bold"><b>B</b></button>
+        <button class="tpbtn" id="tp-italic" title="Italic"><i style="font-style:italic">I</i></button>
+        <input type="color" class="dtool-color" style="width:30px;height:30px" id="tp-color" value="#DD4B25" title="Text color">
+        <button class="tpbtn del" id="tp-delete" title="Delete text element">
+          <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1.5 3.5h10M4.5 3.5v-1a.5.5 0 0 1 .5-.5h3a.5.5 0 0 1 .5.5v1M3 3.5l.6 7h5.8l.6-7" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
       <div class="preview-stage" id="editor-preview-stage"></div>
     </div>
     <div>
@@ -1704,8 +1797,351 @@
     });
   });
 
+  // ---- Canvas Drawing System ----
+  const ds = {
+    tool: 'select', color: '#DD4B25', strokeWidth: 3, shapeType: 'rect',
+    fontSize: 28, fontFamily: "'Fraunces',serif", bold: false, italic: false,
+    history: [], selectedEl: null, textEls: [], _savedImg: null,
+  };
+  let _cvs = null, _ctx = null, _drawing = false, _startX = 0, _startY = 0, _snap = null;
+
+  function initCanvasSize() {
+    const wrap = document.getElementById('canvas-wrap');
+    _cvs  = document.getElementById('design-canvas');
+    if (!wrap || !_cvs) return;
+    const w = wrap.offsetWidth  || 400;
+    const h = wrap.offsetHeight || 500;
+    _cvs.width  = w;
+    _cvs.height = h;
+    _cvs.style.width  = w + 'px';
+    _cvs.style.height = h + 'px';
+    _ctx = _cvs.getContext('2d');
+    if (ds._savedImg && ds._savedImg.width === w && ds._savedImg.height === h) {
+      _ctx.putImageData(ds._savedImg, 0, 0);
+    }
+    attachCanvasEvents();
+    syncDrawCursor();
+  }
+
+  function attachCanvasEvents() {
+    if (!_cvs) return;
+    _cvs.removeEventListener('mousedown',  onCvsMD);
+    _cvs.removeEventListener('mousemove',  onCvsMM);
+    _cvs.removeEventListener('mouseup',    onCvsMU);
+    _cvs.removeEventListener('mouseleave', onCvsMU);
+    _cvs.addEventListener('mousedown',  onCvsMD);
+    _cvs.addEventListener('mousemove',  onCvsMM);
+    _cvs.addEventListener('mouseup',    onCvsMU);
+    _cvs.addEventListener('mouseleave', onCvsMU);
+    _cvs.addEventListener('touchstart', e => { e.preventDefault(); onCvsMD(toMouse(e)); }, { passive: false });
+    _cvs.addEventListener('touchmove',  e => { e.preventDefault(); onCvsMM(toMouse(e)); }, { passive: false });
+    _cvs.addEventListener('touchend',   onCvsMU, { passive: false });
+  }
+
+  function toMouse(e) {
+    const t = e.touches[0];
+    return { clientX: t.clientX, clientY: t.clientY };
+  }
+
+  function cvsPos(e) {
+    const r = _cvs.getBoundingClientRect();
+    return {
+      x: (e.clientX - r.left) * (_cvs.width  / r.width),
+      y: (e.clientY - r.top)  * (_cvs.height / r.height),
+    };
+  }
+
+  function syncDrawCursor() {
+    if (!_cvs) return;
+    const cur = { select: 'default', text: 'text', brush: 'crosshair', shape: 'crosshair', line: 'crosshair' };
+    _cvs.style.cursor       = cur[ds.tool] || 'crosshair';
+    _cvs.style.pointerEvents = ds.tool === 'select' ? 'none' : 'all';
+    const tl = document.getElementById('text-layer');
+    if (tl) tl.style.pointerEvents = ds.tool === 'select' ? 'all' : 'none';
+  }
+
+  function pushHistory() {
+    if (!_ctx) return;
+    ds.history.push(_ctx.getImageData(0, 0, _cvs.width, _cvs.height));
+    if (ds.history.length > 40) ds.history.shift();
+  }
+
+  function onCvsMD(e) {
+    if (ds.tool === 'select') return;
+    const p = cvsPos(e);
+    _startX = p.x; _startY = p.y;
+    if (ds.tool === 'text') { placeTextEl(e); return; }
+    _drawing = true;
+    pushHistory();
+    applyCtxStyle();
+    if (ds.tool === 'brush') {
+      _ctx.beginPath();
+      _ctx.moveTo(p.x, p.y);
+    } else {
+      _snap = _ctx.getImageData(0, 0, _cvs.width, _cvs.height);
+    }
+  }
+
+  function onCvsMM(e) {
+    if (!_drawing) return;
+    const p = cvsPos(e);
+    applyCtxStyle();
+    if (ds.tool === 'brush') {
+      _ctx.lineTo(p.x, p.y);
+      _ctx.stroke();
+    } else {
+      _ctx.putImageData(_snap, 0, 0);
+      renderShape(_startX, _startY, p.x, p.y);
+    }
+  }
+
+  function onCvsMU() {
+    if (!_drawing) return;
+    _drawing = false;
+    if (ds.tool === 'brush') _ctx.closePath();
+    _snap = null;
+  }
+
+  function applyCtxStyle() {
+    _ctx.strokeStyle = ds.color;
+    _ctx.fillStyle   = ds.color + '33';
+    _ctx.lineWidth   = ds.strokeWidth;
+    _ctx.lineCap     = 'round';
+    _ctx.lineJoin    = 'round';
+  }
+
+  function renderShape(x1, y1, x2, y2) {
+    applyCtxStyle();
+    const w = x2 - x1, h = y2 - y1;
+    if (ds.tool === 'line') {
+      _ctx.beginPath(); _ctx.moveTo(x1, y1); _ctx.lineTo(x2, y2); _ctx.stroke();
+      return;
+    }
+    _ctx.beginPath();
+    if (ds.shapeType === 'rect') {
+      _ctx.rect(x1, y1, w, h);
+    } else if (ds.shapeType === 'circle') {
+      _ctx.ellipse(x1 + w / 2, y1 + h / 2, Math.abs(w / 2), Math.abs(h / 2), 0, 0, Math.PI * 2);
+    } else if (ds.shapeType === 'tri') {
+      _ctx.moveTo(x1 + w / 2, y1);
+      _ctx.lineTo(x2, y2);
+      _ctx.lineTo(x1, y2);
+      _ctx.closePath();
+    }
+    _ctx.fill();
+    _ctx.stroke();
+  }
+
+  // ---- Text elements ----
+  function placeTextEl(e) {
+    const wrap = document.getElementById('canvas-wrap');
+    if (!wrap) return;
+    const wr = wrap.getBoundingClientRect();
+    const x  = e.clientX - wr.left;
+    const y  = e.clientY - wr.top;
+
+    const el = document.createElement('div');
+    el.className = 'text-el';
+    el.contentEditable = 'true';
+    el.spellcheck = false;
+    Object.assign(el.style, {
+      left: x + 'px', top: y + 'px',
+      color: ds.color, fontSize: ds.fontSize + 'px',
+      fontFamily: ds.fontFamily,
+      fontWeight: ds.bold   ? '700' : '400',
+      fontStyle:  ds.italic ? 'italic' : 'normal',
+    });
+    el.textContent = 'Text';
+
+    el.addEventListener('mousedown', ev => {
+      if (ds.tool === 'select') { ev.stopPropagation(); dragTextEl(ev, el); }
+    });
+    el.addEventListener('click', () => {
+      if (ds.tool === 'select') selectTextEl(el);
+    });
+    el.addEventListener('dblclick', () => {
+      el.focus();
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+    });
+
+    document.getElementById('text-layer').appendChild(el);
+    ds.textEls.push(el);
+    selectTextEl(el);
+    el.focus();
+    const range = document.createRange();
+    range.selectNodeContents(el);
+    const sel = window.getSelection();
+    sel.removeAllRanges();
+    sel.addRange(range);
+  }
+
+  function selectTextEl(el) {
+    ds.textEls.forEach(t => t.classList.remove('tsel'));
+    ds.selectedEl = el;
+    const bar = document.getElementById('tprops-bar');
+    if (!el) { bar.hidden = true; return; }
+    el.classList.add('tsel');
+    bar.hidden = false;
+    document.getElementById('tp-size').value  = parseInt(el.style.fontSize) || 28;
+    document.getElementById('tp-color').value = rgbToHex(el.style.color) || ds.color;
+    document.getElementById('tp-bold').classList.toggle('on',   el.style.fontWeight === '700');
+    document.getElementById('tp-italic').classList.toggle('on', el.style.fontStyle  === 'italic');
+    const fsel = document.getElementById('tp-font');
+    for (let i = 0; i < fsel.options.length; i++) {
+      if (el.style.fontFamily.startsWith(fsel.options[i].value.replace(/'/g, ''))) {
+        fsel.selectedIndex = i; break;
+      }
+    }
+  }
+
+  function dragTextEl(e, el) {
+    e.preventDefault();
+    const wrap = document.getElementById('canvas-wrap');
+    if (!wrap) return;
+    const wr  = wrap.getBoundingClientRect();
+    const ox  = e.clientX - (parseFloat(el.style.left) || 0) - wr.left;
+    const oy  = e.clientY - (parseFloat(el.style.top)  || 0) - wr.top;
+    function move(ev) {
+      el.style.left = (ev.clientX - wr.left - ox) + 'px';
+      el.style.top  = (ev.clientY - wr.top  - oy) + 'px';
+    }
+    function up() {
+      document.removeEventListener('mousemove', move);
+      document.removeEventListener('mouseup',   up);
+    }
+    document.addEventListener('mousemove', move);
+    document.addEventListener('mouseup',   up);
+  }
+
+  function rgbToHex(rgb) {
+    if (!rgb || rgb[0] === '#') return rgb || '#000000';
+    const m = rgb.match(/\d+/g);
+    if (!m || m.length < 3) return '#000000';
+    return '#' + m.slice(0, 3).map(n => parseInt(n).toString(16).padStart(2, '0')).join('');
+  }
+
+  // ---- Toolbar wiring ----
+  document.getElementById('draw-toolbar').addEventListener('click', e => {
+    const toolBtn = e.target.closest('[data-tool]');
+    if (toolBtn) {
+      ds.tool = toolBtn.dataset.tool;
+      document.querySelectorAll('[data-tool]').forEach(b =>
+        b.classList.toggle('on', b.dataset.tool === ds.tool)
+      );
+      document.getElementById('shape-btns').style.display = ds.tool === 'shape' ? 'flex' : 'none';
+      syncDrawCursor();
+      if (ds.tool !== 'select') selectTextEl(null);
+      return;
+    }
+    const shapeBtn = e.target.closest('[data-shape]');
+    if (shapeBtn) {
+      ds.shapeType = shapeBtn.dataset.shape;
+      document.querySelectorAll('[data-shape]').forEach(b =>
+        b.classList.toggle('on', b.dataset.shape === ds.shapeType)
+      );
+    }
+  });
+
+  document.getElementById('draw-color').addEventListener('input', e => {
+    ds.color = e.target.value;
+  });
+
+  document.getElementById('stroke-width').addEventListener('input', e => {
+    ds.strokeWidth = Number(e.target.value);
+    document.getElementById('stroke-val').textContent = e.target.value;
+  });
+
+  document.getElementById('undo-draw').addEventListener('click', () => {
+    if (!_ctx || ds.history.length === 0) return;
+    const prev = ds.history.pop();
+    _ctx.clearRect(0, 0, _cvs.width, _cvs.height);
+    _ctx.putImageData(prev, 0, 0);
+  });
+
+  document.getElementById('clear-draw').addEventListener('click', () => {
+    if (!_ctx) return;
+    pushHistory();
+    _ctx.clearRect(0, 0, _cvs.width, _cvs.height);
+  });
+
+  // Click on stage background deselects text
+  document.getElementById('editor-preview-stage').addEventListener('mousedown', e => {
+    if (ds.tool === 'select' && !e.target.closest('.text-el')) selectTextEl(null);
+  });
+
+  // ---- Text properties bar ----
+  document.getElementById('tp-font').addEventListener('change', e => {
+    if (ds.selectedEl) { ds.selectedEl.style.fontFamily = e.target.value; ds.fontFamily = e.target.value; }
+  });
+  document.getElementById('tp-size').addEventListener('input', e => {
+    if (ds.selectedEl) { ds.selectedEl.style.fontSize = e.target.value + 'px'; ds.fontSize = Number(e.target.value); }
+  });
+  document.getElementById('tp-bold').addEventListener('click', function () {
+    if (!ds.selectedEl) return;
+    const on = ds.selectedEl.style.fontWeight === '700';
+    ds.selectedEl.style.fontWeight = on ? '400' : '700';
+    this.classList.toggle('on', !on);
+    ds.bold = !on;
+  });
+  document.getElementById('tp-italic').addEventListener('click', function () {
+    if (!ds.selectedEl) return;
+    const on = ds.selectedEl.style.fontStyle === 'italic';
+    ds.selectedEl.style.fontStyle = on ? 'normal' : 'italic';
+    this.classList.toggle('on', !on);
+    ds.italic = !on;
+  });
+  document.getElementById('tp-color').addEventListener('input', e => {
+    if (ds.selectedEl) ds.selectedEl.style.color = e.target.value;
+  });
+  document.getElementById('tp-delete').addEventListener('click', () => {
+    if (!ds.selectedEl) return;
+    ds.textEls = ds.textEls.filter(t => t !== ds.selectedEl);
+    ds.selectedEl.remove();
+    selectTextEl(null);
+  });
+
+  // Keyboard shortcuts for tool switching
+  document.addEventListener('keydown', e => {
+    if (!document.getElementById('page-edit') || document.getElementById('page-edit').hidden) return;
+    if (e.target.closest('[contenteditable]') || e.target.matches('input,select,textarea')) return;
+    const map = { v: 'select', t: 'text', b: 'brush', s: 'shape', l: 'line' };
+    if (map[e.key.toLowerCase()]) {
+      ds.tool = map[e.key.toLowerCase()];
+      document.querySelectorAll('[data-tool]').forEach(btn =>
+        btn.classList.toggle('on', btn.dataset.tool === ds.tool)
+      );
+      document.getElementById('shape-btns').style.display = ds.tool === 'shape' ? 'flex' : 'none';
+      syncDrawCursor();
+      if (ds.tool !== 'select') selectTextEl(null);
+    }
+    if (e.key === 'z' && (e.ctrlKey || e.metaKey)) {
+      e.preventDefault();
+      document.getElementById('undo-draw').click();
+    }
+    if ((e.key === 'Delete' || e.key === 'Backspace') && ds.selectedEl && !document.activeElement.closest('[contenteditable]')) {
+      document.getElementById('tp-delete').click();
+    }
+  });
+
   // ---- Editor ----
   function openEditor(tab) {
+    // Clear canvas & text layers when switching to a different variant
+    if (ds._editingVariant !== state.selected) {
+      ds._editingVariant = state.selected;
+      ds.history = [];
+      ds._savedImg = null;
+      ds.textEls = [];
+      ds.selectedEl = null;
+      if (_cvs && _ctx) _ctx.clearRect(0, 0, _cvs.width, _cvs.height);
+      const tl = document.getElementById('text-layer');
+      if (tl) tl.innerHTML = '';
+      document.getElementById('tprops-bar').hidden = true;
+    }
+
     const c = parseContent(state.selected * 0xf1b3 + 1);
     const e = state.edits;
     document.getElementById('edit-head').value    = e.head    || c.head    || '';
@@ -1806,7 +2242,23 @@
   }
 
   function updateEditorPreview() {
-    document.getElementById('editor-preview-stage').innerHTML = makePoster(state.selected);
+    const posterLayer = document.getElementById('poster-html-layer');
+    if (!posterLayer) {
+      // First time: build the layered canvas structure
+      const stage = document.getElementById('editor-preview-stage');
+      stage.innerHTML =
+        '<div id="canvas-wrap" class="canvas-wrap">' +
+          '<div id="poster-html-layer"></div>' +
+          '<canvas id="design-canvas"></canvas>' +
+          '<div id="text-layer"></div>' +
+        '</div>';
+      document.getElementById('poster-html-layer').innerHTML = makePoster(state.selected);
+      setTimeout(initCanvasSize, 40);
+    } else {
+      // Save canvas state, update poster only
+      if (_cvs && _ctx) ds._savedImg = _ctx.getImageData(0, 0, _cvs.width, _cvs.height);
+      posterLayer.innerHTML = makePoster(state.selected);
+    }
   }
 
   // Color picker sync: swatch <-> hex input

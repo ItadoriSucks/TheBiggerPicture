@@ -1934,7 +1934,6 @@
         e0('brand','text',284,370,78,60,{text:state.businessName.split(' ')[0],fs:16,ff:"'Fraunces',serif",color:pal.fg}),
       ],
       1: [
-        e0('bg','block',0,0,400,500,{bg:pal.bg}),
         e0('top','block',0,0,400,252,{bg:pal.fg}),
         e0('label','text',32,32,240,22,{text:state.businessName,fs:11,ff:"'Manrope',sans-serif",fw:'600',color:pal.ac,tt:'uppercase',ls:'0.12em'}),
         e0('head','text',32,58,336,172,{text:c.head+'.',fs:52,ff:"'Fraunces',serif",fw:'400',color:pal.bg,lh:0.98,ls:'-0.03em'}),
@@ -1942,7 +1941,6 @@
         e0('sub','text',32,400,300,48,{text:c.sub||c.closing,fs:12,ff:"'Manrope',sans-serif",color:pal.fg,op:0.5}),
       ],
       2: [
-        e0('bg','block',0,0,400,500,{bg:pal.bg}),
         e0('ribbon','block',0,0,400,44,{bg:pal.fg}),
         e0('rib-txt','text',38,11,200,22,{text:c.ribbon,fs:11,ff:"'Manrope',sans-serif",fw:'600',color:pal.bg,tt:'uppercase',ls:'0.12em'}),
         e0('head','text',38,68,324,218,{text:c.head,fs:64,ff:"'Fraunces',serif",fw:'400',color:pal.fg,lh:0.95,ls:'-0.03em'}),
@@ -1972,8 +1970,10 @@
       board.addEventListener('mousedown', onBoardBg);
     }
 
-    // Remove board elements but keep canvas if present
+    // Remove board elements, image overlay, and canvas
     board.querySelectorAll('.board-el').forEach(el => el.remove());
+    const _oldOvr = board.querySelector('#board-img-overlay');
+    if (_oldOvr) _oldOvr.remove();
     if (board.contains(_cvs)) board.removeChild(_cvs);
     boardEls = []; boardSel = null;
 
@@ -1983,13 +1983,18 @@
     const li   = (e.layout >= 0) ? e.layout : state.selected;
     const c    = getContent(state.selected * 0xf1b3 + 1, state.selected);
 
-    board.style.background = opal.bg;
+    board.style.background      = opal.bg;
+    board.style.backgroundImage = 'none';
+
+    // Non-interactive image overlay (respects opacity, sits below board elements)
     if (e.imageUrl) {
-      board.style.backgroundImage    = `url('${e.imageUrl}')`;
-      board.style.backgroundSize     = 'cover';
-      board.style.backgroundPosition = 'center';
-    } else {
-      board.style.backgroundImage = 'none';
+      const imgOvr = document.createElement('div');
+      imgOvr.id = 'board-img-overlay';
+      imgOvr.style.cssText =
+        `position:absolute;inset:0;z-index:2;pointer-events:none;` +
+        `background:url('${e.imageUrl}') center/cover no-repeat;` +
+        `opacity:${(e.imageOpacity ?? 40) / 100};`;
+      board.appendChild(imgOvr);
     }
 
     // Build elements
@@ -2547,7 +2552,9 @@
   document.getElementById('img-opacity').addEventListener('input', ev => {
     state.edits.imageOpacity = Number(ev.target.value);
     document.getElementById('opacity-val').textContent = ev.target.value;
-    updateEditorPreview();
+    // Update overlay directly — no need to rebuild the whole board
+    const ovr = document.getElementById('board-img-overlay');
+    if (ovr) ovr.style.opacity = ev.target.value / 100;
   });
 
   document.getElementById('reset-colors-btn').addEventListener('click', () => {

@@ -1,0 +1,1296 @@
+<!-- The Bigger Picture — AI Marketing Tool MVP for Local Businesses -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,300..700,0..100&family=Manrope:wght@400;500;600;700&display=swap');
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  [hidden] { display: none !important; }
+
+  :root {
+    --bg: #F5F1EA;
+    --bg-elevated: #FBF8F2;
+    --ink: #1A1614;
+    --ink-soft: #4A4339;
+    --ink-faint: #8C857B;
+    --rule: #E8E1D6;
+    --rule-strong: #D4CCBE;
+    --accent: #DD4B25;
+    --accent-soft: #FAEAE3;
+    --brand-blue: #2B5DD6;
+    --brand-mint: #6BB39A;
+    --green: #2A7A4B;
+    --green-soft: #E6F4EC;
+  }
+
+  html, body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Manrope', system-ui, sans-serif;
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    min-height: 100vh;
+  }
+
+  .display { font-family: 'Fraunces', Georgia, serif; font-variation-settings: "opsz" 144, "SOFT" 50; letter-spacing: -0.01em; }
+
+  /* ---- Topbar ---- */
+  .topbar {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 20px 48px;
+    border-bottom: 1px solid var(--rule);
+    background: var(--bg);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .logo { display: flex; align-items: center; gap: 10px; font-family: 'Fraunces', serif; font-size: 20px; font-weight: 500; letter-spacing: -0.02em; }
+  .logo-mark {
+    width: 30px; height: 30px;
+    background: var(--ink); border-radius: 4px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .logo-mark svg { color: var(--accent); }
+
+  .topbar-right { display: flex; align-items: center; gap: 14px; }
+
+  .demo-btn {
+    appearance: none; background: var(--accent-soft); color: var(--accent);
+    border: 1px solid var(--accent); border-radius: 100px;
+    padding: 7px 16px; font-family: inherit; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s ease;
+  }
+  .demo-btn:hover { background: var(--accent); color: white; }
+
+  .credits-pill {
+    font-size: 13px; color: var(--ink-soft);
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    padding: 6px 12px; border-radius: 100px;
+  }
+  .credits-pill strong { color: var(--ink); font-weight: 600; }
+
+  .stepper { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--ink-faint); }
+  .stepper .step { display: flex; align-items: center; gap: 7px; transition: color 0.2s; }
+  .stepper .step.active { color: var(--ink); }
+  .stepper .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--rule-strong); transition: all 0.3s; }
+  .stepper .step.active .dot { background: var(--accent); transform: scale(1.3); }
+  .stepper .step.done .dot { background: var(--ink); }
+  .stepper .divider { width: 20px; height: 1px; background: var(--rule-strong); }
+
+  /* ---- Page layout ---- */
+  .page { max-width: 1200px; margin: 0 auto; padding: 52px 48px 96px; animation: fadeUp 0.5s ease both; }
+  .page[hidden] { display: none; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  @keyframes scaleIn { from { opacity: 0; transform: scale(0.97); } to { opacity: 1; transform: scale(1); } }
+
+  /* ---- Signup Gate ---- */
+  .gate-overlay {
+    position: fixed; inset: 0;
+    background: rgba(245,241,234,0.96);
+    backdrop-filter: blur(8px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 50;
+  }
+  .gate-card {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 20px; padding: 48px 44px; max-width: 440px; width: 100%;
+    text-align: center;
+  }
+  .gate-card .badge {
+    display: inline-block;
+    background: var(--accent-soft); color: var(--accent);
+    font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 5px 12px; border-radius: 100px;
+    margin-bottom: 20px;
+  }
+  .gate-card h2 { font-family: 'Fraunces', serif; font-size: 32px; font-weight: 400; letter-spacing: -0.02em; margin-bottom: 8px; }
+  .gate-card p { color: var(--ink-soft); font-size: 15px; margin-bottom: 28px; }
+  .gate-input {
+    width: 100%; padding: 14px 16px; margin-bottom: 12px;
+    background: var(--bg); border: 1px solid var(--rule);
+    border-radius: 10px; font-family: inherit; font-size: 15px; color: var(--ink);
+    transition: border-color 0.15s;
+  }
+  .gate-input:focus { outline: none; border-color: var(--ink); }
+  .gate-input::placeholder { color: var(--ink-faint); }
+  .gate-submit {
+    width: 100%; padding: 16px; background: var(--ink); color: var(--bg);
+    border: 0; border-radius: 100px; font-family: 'Fraunces', serif;
+    font-size: 18px; cursor: pointer; transition: all 0.18s;
+  }
+  .gate-submit:hover { background: var(--accent); }
+  .gate-note { margin-top: 14px; font-size: 12px; color: var(--ink-faint); }
+  .gate-note strong { color: var(--ink); }
+
+  /* ---- Brief page ---- */
+  .prompt-grid { display: grid; grid-template-columns: 1fr 320px; gap: 64px; align-items: start; }
+  .prompt-eyebrow { font-size: 12px; text-transform: uppercase; letter-spacing: 0.14em; color: var(--ink-faint); margin-bottom: 16px; font-weight: 500; }
+  h1.prompt-title { font-family: 'Fraunces', serif; font-variation-settings: "opsz" 144, "SOFT" 50; font-size: clamp(38px, 5vw, 60px); font-weight: 400; line-height: 1.02; letter-spacing: -0.025em; margin-bottom: 10px; }
+  h1.prompt-title em { font-style: italic; color: var(--accent); font-variation-settings: "opsz" 144, "SOFT" 100; }
+  .prompt-sub { color: var(--ink-soft); font-size: 16px; margin-bottom: 44px; max-width: 480px; }
+
+  /* Auto-fill strip */
+  .autofill-strip {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 14px; padding: 20px 22px; margin-bottom: 32px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .autofill-strip .af-icon { color: var(--accent); flex-shrink: 0; }
+  .autofill-strip .af-label { font-size: 13px; color: var(--ink-faint); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.1em; font-weight: 500; }
+  .autofill-input-row { display: flex; gap: 8px; flex: 1; }
+  .autofill-input {
+    flex: 1; padding: 11px 14px;
+    background: var(--bg); border: 1px solid var(--rule-strong);
+    border-radius: 8px; font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .autofill-input:focus { outline: none; border-color: var(--ink); }
+  .autofill-input::placeholder { color: var(--ink-faint); }
+  .autofill-go {
+    appearance: none; background: var(--ink); color: var(--bg);
+    border: 0; border-radius: 8px; padding: 10px 18px;
+    font-family: inherit; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  }
+  .autofill-go:hover { background: var(--accent); }
+  .autofill-status { font-size: 13px; color: var(--brand-mint); margin-top: 6px; display: none; }
+  .autofill-status.visible { display: block; }
+
+  fieldset { border: 0; margin-bottom: 32px; }
+  fieldset > legend { font-size: 12px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint); margin-bottom: 12px; font-weight: 500; }
+  legend .legend-num { display: inline-block; font-family: 'Fraunces', serif; font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100; font-size: 15px; color: var(--accent); margin-right: 7px; }
+
+  .type-cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .type-card {
+    appearance: none; background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 20px 18px; text-align: left; cursor: pointer;
+    font-family: inherit; transition: all 0.18s; color: var(--ink);
+  }
+  .type-card:hover { border-color: var(--rule-strong); transform: translateY(-1px); }
+  .type-card.selected { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .type-icon { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+  .type-card.selected .type-icon { color: var(--accent); }
+  .type-name { font-family: 'Fraunces', serif; font-size: 20px; font-weight: 400; letter-spacing: -0.01em; margin-bottom: 3px; }
+  .type-desc { font-size: 12px; color: var(--ink-faint); line-height: 1.4; }
+  .type-card.selected .type-desc { color: rgba(245,241,234,0.6); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    appearance: none; background: transparent; border: 1px solid var(--rule-strong);
+    border-radius: 100px; padding: 7px 15px; font-family: inherit; font-size: 14px;
+    color: var(--ink-soft); cursor: pointer; transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--ink); color: var(--ink); }
+  .chip.selected { background: var(--accent); color: white; border-color: var(--accent); }
+
+  /* Neighborhood row */
+  .neighborhood-row { display: flex; gap: 10px; align-items: stretch; }
+  .city-select {
+    flex: 1; padding: 11px 14px;
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 10px; font-family: inherit; font-size: 15px; color: var(--ink);
+    cursor: pointer;
+  }
+  .city-select:focus { outline: none; border-color: var(--ink); }
+  .hook-badge {
+    background: var(--green-soft); border: 1px solid rgba(42,122,75,0.2);
+    border-radius: 10px; padding: 10px 16px;
+    font-size: 13px; color: var(--green);
+    display: flex; align-items: center; gap: 8px; flex: 1;
+  }
+  .hook-badge .hook-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; flex-shrink: 0; }
+
+  .prompt-area {
+    width: 100%; min-height: 120px; padding: 18px 20px;
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 12px; font-family: inherit; font-size: 15px;
+    line-height: 1.55; color: var(--ink); resize: vertical; transition: border-color 0.15s;
+  }
+  .prompt-area:focus { outline: none; border-color: var(--ink); }
+  .prompt-area::placeholder { color: var(--ink-faint); }
+
+  .prompt-tips { margin-top: 8px; font-size: 13px; color: var(--ink-faint); display: flex; gap: 6px; flex-wrap: wrap; }
+  .prompt-tips button {
+    appearance: none; background: none; border: 0; color: var(--accent);
+    cursor: pointer; font-family: inherit; font-size: inherit; padding: 0;
+    text-decoration: underline; text-decoration-thickness: 0.5px; text-underline-offset: 3px;
+  }
+  .prompt-tips button:hover { color: var(--ink); }
+
+  .website-row { display: flex; gap: 10px; margin-top: 10px; }
+  .website-input {
+    flex: 1; padding: 11px 14px;
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 10px; font-family: inherit; font-size: 14px; color: var(--ink);
+  }
+  .website-input:focus { outline: none; border-color: var(--ink); }
+  .website-input::placeholder { color: var(--ink-faint); }
+
+  .generate-row { margin-top: 36px; display: flex; align-items: center; gap: 18px; }
+  .generate-btn {
+    appearance: none; background: var(--ink); color: var(--bg);
+    border: 0; padding: 16px 30px; border-radius: 100px;
+    font-family: 'Fraunces', serif; font-size: 18px; font-weight: 400;
+    letter-spacing: -0.01em; cursor: pointer; transition: all 0.18s;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .generate-btn:hover { background: var(--accent); transform: translateY(-1px); }
+  .generate-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+  .generate-meta { font-size: 13px; color: var(--ink-faint); line-height: 1.5; }
+
+  /* Brand sidebar */
+  .brand-card {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 26px 24px;
+    position: sticky; top: 90px;
+  }
+  .brand-card h3 { font-family: 'Fraunces', serif; font-weight: 400; font-size: 17px; margin-bottom: 3px; letter-spacing: -0.01em; }
+  .brand-edit { font-size: 12px; color: var(--accent); text-decoration: underline; text-underline-offset: 2px; cursor: pointer; background: none; border: 0; font-family: inherit; padding: 0; margin-bottom: 20px; display: block; }
+  .brand-row { display: flex; align-items: center; gap: 10px; padding: 11px 0; border-top: 1px solid var(--rule); }
+  .brand-label { font-size: 11px; color: var(--ink-faint); text-transform: uppercase; letter-spacing: 0.1em; flex: 0 0 72px; }
+  .brand-value { font-size: 14px; color: var(--ink); }
+  .brand-logo-mini {
+    width: 32px; height: 32px; background: var(--ink); color: var(--accent);
+    border-radius: 6px; display: flex; align-items: center; justify-content: center;
+    font-family: 'Fraunces', serif; font-size: 16px; font-weight: 500;
+  }
+  .swatches { display: flex; gap: 5px; }
+  .swatch { width: 18px; height: 18px; border-radius: 4px; border: 1px solid var(--rule-strong); }
+
+  /* ---- Demo Mode ---- */
+  .demo-page { max-width: 800px; margin: 0 auto; padding: 52px 48px 96px; animation: fadeUp 0.4s ease both; }
+  .demo-page[hidden] { display: none; }
+  .demo-header { text-align: center; margin-bottom: 48px; }
+  .demo-header .badge { display: inline-block; background: var(--accent); color: white; font-size: 12px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; padding: 5px 14px; border-radius: 100px; margin-bottom: 18px; }
+  .demo-header h2 { font-family: 'Fraunces', serif; font-size: 44px; font-weight: 400; letter-spacing: -0.025em; margin-bottom: 10px; }
+  .demo-header p { color: var(--ink-soft); font-size: 16px; }
+
+  .demo-form {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 18px; padding: 36px;
+  }
+  .demo-field { margin-bottom: 20px; }
+  .demo-field label { display: block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); margin-bottom: 8px; }
+  .demo-field input, .demo-field select {
+    width: 100%; padding: 14px 16px;
+    background: var(--bg); border: 1px solid var(--rule);
+    border-radius: 10px; font-family: inherit; font-size: 15px; color: var(--ink);
+  }
+  .demo-field input:focus, .demo-field select:focus { outline: none; border-color: var(--ink); }
+  .demo-field input::placeholder { color: var(--ink-faint); }
+  .demo-launch {
+    width: 100%; padding: 18px; background: var(--accent); color: white;
+    border: 0; border-radius: 100px; font-family: 'Fraunces', serif;
+    font-size: 20px; cursor: pointer; transition: all 0.18s; margin-top: 8px;
+  }
+  .demo-launch:hover { background: var(--ink); }
+  .demo-back { appearance: none; background: none; border: 0; font-family: inherit; color: var(--ink-soft); font-size: 14px; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 0; margin-bottom: 28px; }
+  .demo-back:hover { color: var(--accent); }
+
+  /* ---- Loading ---- */
+  .loading-overlay {
+    position: fixed; inset: 0;
+    background: rgba(245,241,234,0.92);
+    backdrop-filter: blur(6px);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 100; animation: fadeIn 0.25s ease;
+  }
+  .loading-card { text-align: center; max-width: 380px; }
+  .loading-card .anim { position: relative; width: 80px; height: 80px; margin: 0 auto 28px; }
+  .loading-card .anim div {
+    position: absolute; inset: 0; border: 1.5px solid var(--accent);
+    border-radius: 50%; opacity: 0; animation: pulse 1.6s ease-out infinite;
+  }
+  .loading-card .anim div:nth-child(2) { animation-delay: 0.4s; }
+  .loading-card .anim div:nth-child(3) { animation-delay: 0.8s; }
+  @keyframes pulse { 0% { transform: scale(0.4); opacity: 0; } 30% { opacity: 0.7; } 100% { transform: scale(1.4); opacity: 0; } }
+  .loading-card .anim::after { content: ""; position: absolute; inset: 30%; background: var(--accent); border-radius: 50%; }
+  .loading-card h3 { font-family: 'Fraunces', serif; font-size: 24px; font-weight: 400; margin-bottom: 6px; letter-spacing: -0.015em; }
+  .loading-card p { color: var(--ink-soft); font-size: 15px; }
+  .loading-status { margin-top: 24px; font-size: 13px; color: var(--ink-faint); }
+
+  /* ---- Results ---- */
+  .results-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 36px; padding-bottom: 26px; border-bottom: 1px solid var(--rule); }
+  .results-header h2 { font-family: 'Fraunces', serif; font-variation-settings: "opsz" 144, "SOFT" 50; font-size: clamp(32px, 4vw, 48px); font-weight: 400; letter-spacing: -0.025em; line-height: 1.05; }
+  .results-header em { font-style: italic; color: var(--accent); }
+  .back-link { appearance: none; background: none; border: 0; font-family: inherit; color: var(--ink-soft); font-size: 14px; cursor: pointer; margin-bottom: 10px; display: inline-flex; align-items: center; gap: 5px; padding: 0; }
+  .back-link:hover { color: var(--accent); }
+  .results-meta { font-size: 13px; color: var(--ink-faint); margin-top: 5px; }
+
+  .results-layout { display: grid; grid-template-columns: 1fr 360px; gap: 44px; align-items: start; }
+
+  /* Output type tabs */
+  .output-tabs { display: flex; gap: 6px; margin-bottom: 16px; }
+  .output-tab {
+    appearance: none; background: transparent; border: 1px solid var(--rule-strong);
+    border-radius: 8px; padding: 9px 16px; font-family: inherit; font-size: 13px;
+    color: var(--ink-soft); cursor: pointer; transition: all 0.15s;
+  }
+  .output-tab:hover { border-color: var(--ink); color: var(--ink); }
+  .output-tab.active { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+
+  /* Before/After toggle */
+  .ba-toggle {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 13px; color: var(--ink-soft);
+    margin-bottom: 12px;
+  }
+  .ba-switch {
+    position: relative; width: 38px; height: 22px;
+    background: var(--rule-strong); border-radius: 100px; cursor: pointer;
+    transition: background 0.2s;
+  }
+  .ba-switch.on { background: var(--accent); }
+  .ba-switch::after {
+    content: ""; position: absolute; width: 16px; height: 16px;
+    background: white; border-radius: 50%; top: 3px; left: 3px;
+    transition: transform 0.2s;
+  }
+  .ba-switch.on::after { transform: translateX(16px); }
+
+  .preview-stage {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 32px;
+    display: flex; align-items: center; justify-content: center;
+    min-height: 500px; animation: scaleIn 0.35s ease both; position: relative;
+  }
+
+  /* Before/After panel */
+  .ba-panel {
+    width: 100%; display: none;
+    grid-template-columns: 1fr 1fr; gap: 16px;
+  }
+  .ba-panel.visible { display: grid; }
+  .ba-half { display: flex; flex-direction: column; align-items: center; gap: 10px; }
+  .ba-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint); }
+  .ba-label.after { color: var(--green); }
+  .ig-mock {
+    width: 100%; border-radius: 10px; overflow: hidden;
+    border: 1px solid var(--rule); background: white; font-size: 11px;
+  }
+  .ig-mock-header { padding: 8px 10px; display: flex; align-items: center; gap: 7px; border-bottom: 1px solid #eee; }
+  .ig-avatar { width: 26px; height: 26px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 12px; color: var(--accent); }
+  .ig-name { font-weight: 700; font-size: 11px; font-family: -apple-system, sans-serif; }
+  .ig-img-area { width: 100%; aspect-ratio: 1/1; background: #f0f0f0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+  .ig-img-area.before { background: #e8e8e8; }
+  .ig-img-area.before span { color: #aaa; font-size: 11px; font-family: -apple-system, sans-serif; }
+  .ig-caption { padding: 8px 10px; font-family: -apple-system, sans-serif; line-height: 1.4; }
+
+  .variant-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 14px; }
+  .variant-thumb {
+    appearance: none; background: var(--bg-elevated); border: 2px solid var(--rule);
+    border-radius: 8px; padding: 0; cursor: pointer; overflow: hidden;
+    aspect-ratio: 1/1; transition: all 0.15s; position: relative;
+  }
+  .variant-thumb:hover { border-color: var(--rule-strong); }
+  .variant-thumb.selected { border-color: var(--accent); }
+  .variant-thumb.selected::after { content: "✓"; position: absolute; top: 5px; right: 5px; background: var(--accent); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; }
+  .variant-thumb .poster-mini { transform: scale(0.28); transform-origin: top left; width: 357%; height: 357%; }
+
+  /* Actions card */
+  .actions-card {
+    background: var(--bg-elevated); border: 1px solid var(--rule);
+    border-radius: 16px; padding: 24px; position: sticky; top: 90px;
+  }
+  .actions-card h4 { font-size: 11px; text-transform: uppercase; letter-spacing: 0.12em; color: var(--ink-faint); font-weight: 500; margin-bottom: 12px; }
+
+  /* QR section */
+  .qr-section {
+    background: var(--bg); border: 1px solid var(--rule);
+    border-radius: 12px; padding: 16px; margin-bottom: 20px;
+    display: flex; align-items: center; gap: 14px;
+  }
+  .qr-section img { width: 64px; height: 64px; border-radius: 6px; border: 1px solid var(--rule); }
+  .qr-section .qr-info { flex: 1; }
+  .qr-section .qr-title { font-size: 13px; font-weight: 600; color: var(--ink); margin-bottom: 3px; }
+  .qr-section .qr-url { font-size: 12px; color: var(--ink-faint); }
+  .qr-edit { font-size: 12px; color: var(--accent); background: none; border: 0; cursor: pointer; font-family: inherit; text-decoration: underline; padding: 0; }
+
+  .edit-list { list-style: none; margin-bottom: 20px; border-top: 1px solid var(--rule); }
+  .edit-list li { border-bottom: 1px solid var(--rule); }
+  .edit-list button { width: 100%; appearance: none; background: none; border: 0; padding: 12px 0; font-family: inherit; font-size: 14px; color: var(--ink); cursor: pointer; text-align: left; display: flex; align-items: center; justify-content: space-between; transition: color 0.15s; }
+  .edit-list button:hover { color: var(--accent); }
+  .edit-list .arrow { color: var(--ink-faint); }
+
+  .format-row { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+  .format-pill {
+    flex: 1; appearance: none; background: transparent; border: 1px solid var(--rule-strong);
+    border-radius: 8px; padding: 9px; font-family: inherit; font-size: 12px;
+    cursor: pointer; color: var(--ink-soft); transition: all 0.15s; text-align: center;
+    min-width: 60px;
+  }
+  .format-pill:hover { border-color: var(--ink); }
+  .format-pill.selected { background: var(--ink); color: var(--bg); border-color: var(--ink); }
+  .format-pill .px { display: block; font-size: 10px; color: var(--ink-faint); margin-top: 2px; }
+  .format-pill.selected .px { color: rgba(245,241,234,0.5); }
+
+  .download-btn {
+    width: 100%; appearance: none; background: var(--accent); color: white;
+    border: 0; padding: 15px; border-radius: 100px; font-family: 'Fraunces', serif;
+    font-size: 17px; cursor: pointer; transition: all 0.18s;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    margin-bottom: 8px;
+  }
+  .download-btn:hover { background: var(--ink); transform: translateY(-1px); }
+
+  .post-btn {
+    width: 100%; appearance: none;
+    background: linear-gradient(135deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+    color: white; border: 0; padding: 13px; border-radius: 100px;
+    font-family: 'Fraunces', serif; font-size: 16px; cursor: pointer;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    transition: all 0.18s;
+  }
+  .post-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+
+  .pack-note { font-size: 12px; color: var(--green); text-align: center; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 5px; }
+
+  /* ---- Posters ---- */
+  .poster { width: 400px; height: 500px; border-radius: 6px; overflow: hidden; position: relative; font-family: 'Fraunces', serif; box-shadow: 0 8px 32px rgba(26,22,20,0.08), 0 2px 8px rgba(26,22,20,0.04); }
+  .poster--a { background: var(--accent); color: #FBF8F2; padding: 44px 38px; display: flex; flex-direction: column; justify-content: space-between; }
+  .poster--a .eyebrow { font-family: 'Manrope', sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.75; }
+  .poster--a .head { font-size: 68px; line-height: 0.95; letter-spacing: -0.03em; font-weight: 400; }
+  .poster--a .head em { font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100; }
+  .poster--a .meta { font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; border-top: 1px solid rgba(251,248,242,0.4); padding-top: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .poster--a .brand-stamp { font-family: 'Fraunces', serif; font-size: 16px; }
+  .poster--a .qr-corner { width: 48px; height: 48px; border-radius: 6px; background: white; padding: 4px; }
+  .poster--a .qr-corner img { width: 100%; height: 100%; }
+
+  .poster--b { background: #1A1614; color: #F5F1EA; display: grid; grid-template-rows: 1fr 1fr; }
+  .poster--b .top { background: #F5F1EA; color: #1A1614; padding: 32px 28px; display: flex; flex-direction: column; justify-content: space-between; position: relative; }
+  .poster--b .top::after { content: ""; position: absolute; bottom: -1px; left: 28px; right: 28px; height: 1px; background: var(--accent); }
+  .poster--b .label { font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase; color: var(--accent); }
+  .poster--b .top-head { font-size: 40px; line-height: 1; letter-spacing: -0.02em; font-weight: 400; }
+  .poster--b .bot { padding: 28px; display: flex; flex-direction: column; justify-content: space-between; }
+  .poster--b .bot-head { font-size: 50px; line-height: 0.95; letter-spacing: -0.025em; font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100; color: var(--accent); }
+  .poster--b .bot-meta { font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; color: rgba(245,241,234,0.65); display: flex; justify-content: space-between; align-items: flex-end; }
+  .poster--b .qr-corner { width: 44px; height: 44px; border-radius: 5px; background: rgba(255,255,255,0.1); padding: 4px; }
+  .poster--b .qr-corner img { width: 100%; height: 100%; filter: invert(1); }
+
+  .poster--c { background: #6BB39A; color: #1A1614; padding: 32px; display: flex; flex-direction: column; justify-content: space-between; position: relative; overflow: hidden; }
+  .poster--c::before { content: ""; position: absolute; width: 300px; height: 300px; background: #FBF8F2; border-radius: 50%; top: -75px; right: -90px; }
+  .poster--c::after { content: ""; position: absolute; width: 110px; height: 110px; background: #DD4B25; border-radius: 50%; top: 90px; right: 110px; }
+  .poster--c > * { position: relative; z-index: 1; }
+  .poster--c .ribbon { font-family: 'Manrope', sans-serif; font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase; background: #1A1614; color: #FBF8F2; padding: 5px 12px; border-radius: 100px; align-self: flex-start; }
+  .poster--c .head-c { font-size: 58px; line-height: 0.95; letter-spacing: -0.025em; font-weight: 400; max-width: 260px; margin-top: 180px; }
+  .poster--c .head-c em { font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100; }
+  .poster--c .meta-c { font-family: 'Manrope', sans-serif; font-size: 12px; line-height: 1.5; border-top: 1px solid #1A1614; padding-top: 12px; margin-top: 16px; display: flex; justify-content: space-between; align-items: center; }
+  .poster--c .qr-corner { width: 44px; height: 44px; border-radius: 5px; background: white; padding: 4px; }
+  .poster--c .qr-corner img { width: 100%; height: 100%; }
+
+  /* Table tent & window sign */
+  .tent-card { width: 340px; height: 240px; border-radius: 10px; overflow: hidden; font-family: 'Fraunces', serif; box-shadow: 0 6px 24px rgba(26,22,20,0.1); display: flex; }
+  .tent-left { background: var(--ink); color: var(--bg); padding: 28px 24px; display: flex; flex-direction: column; justify-content: space-between; flex: 1; }
+  .tent-left .tent-label { font-family: 'Manrope', sans-serif; font-size: 10px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); }
+  .tent-left .tent-head { font-size: 32px; line-height: 1; letter-spacing: -0.02em; }
+  .tent-left .tent-sub { font-family: 'Manrope', sans-serif; font-size: 11px; color: rgba(245,241,234,0.6); }
+  .tent-right { background: var(--accent); width: 100px; padding: 20px 16px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
+  .tent-right .qr-wrap { width: 64px; height: 64px; background: white; border-radius: 6px; padding: 4px; }
+  .tent-right .qr-wrap img { width: 100%; height: 100%; }
+  .tent-right .scan-text { font-family: 'Manrope', sans-serif; font-size: 9px; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(255,255,255,0.85); text-align: center; line-height: 1.3; }
+
+  .window-sign { width: 360px; height: 480px; border-radius: 10px; overflow: hidden; font-family: 'Fraunces', serif; box-shadow: 0 8px 32px rgba(26,22,20,0.1); background: #FBF8F2; border: 6px solid var(--ink); display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 36px 32px; text-align: center; }
+  .window-sign .ws-top { font-family: 'Manrope', sans-serif; font-size: 11px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--ink-faint); }
+  .window-sign .ws-head { font-size: 64px; line-height: 0.95; letter-spacing: -0.03em; }
+  .window-sign .ws-head em { color: var(--accent); font-style: italic; font-variation-settings: "opsz" 144, "SOFT" 100; }
+  .window-sign .ws-bot { width: 100%; }
+  .window-sign .ws-qr { width: 80px; height: 80px; background: white; border-radius: 8px; padding: 5px; border: 1px solid var(--rule); margin: 0 auto 10px; }
+  .window-sign .ws-qr img { width: 100%; height: 100%; }
+  .window-sign .ws-name { font-family: 'Manrope', sans-serif; font-size: 12px; color: var(--ink-soft); }
+
+  /* Instagram post output */
+  .ig-output { width: 400px; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 8px 32px rgba(26,22,20,0.08); font-family: -apple-system, BlinkMacSystemFont, sans-serif; }
+  .ig-output-header { padding: 12px 14px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid #efefef; }
+  .ig-output-avatar { width: 32px; height: 32px; border-radius: 50%; background: var(--ink); display: flex; align-items: center; justify-content: center; font-family: 'Fraunces', serif; font-size: 14px; color: var(--accent); }
+  .ig-output-name { font-weight: 700; font-size: 13px; }
+  .ig-output-loc { font-size: 11px; color: #888; }
+  .ig-output-img { width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+  .ig-output-img .poster { width: 100% !important; height: 100% !important; border-radius: 0; box-shadow: none; }
+  .ig-output-actions { padding: 10px 14px 4px; display: flex; gap: 14px; }
+  .ig-output-actions svg { color: #262626; }
+  .ig-output-caption { padding: 4px 14px 14px; font-size: 13px; line-height: 1.5; }
+  .ig-output-caption strong { font-weight: 700; }
+  .ig-hashtags { color: #00376b; font-size: 13px; margin-top: 4px; }
+
+  /* Toast */
+  .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: var(--bg); padding: 13px 22px; border-radius: 100px; font-size: 14px; z-index: 200; transition: transform 0.3s ease; display: flex; align-items: center; gap: 8px; }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 900px) {
+    .topbar { padding: 16px 20px; }
+    .stepper .step-label { display: none; }
+    .page, .demo-page { padding: 32px 20px 64px; }
+    .prompt-grid, .results-layout { grid-template-columns: 1fr; gap: 28px; }
+    .brand-card, .actions-card { position: static; }
+    .type-cards { grid-template-columns: 1fr; }
+    .poster { width: 100%; max-width: 400px; height: auto; aspect-ratio: 4/5; }
+  }
+</style>
+
+<!-- ===== TOPBAR ===== -->
+<header class="topbar">
+  <div class="logo">
+    <div class="logo-mark">
+      <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+        <rect x="2" y="2" width="5" height="7" rx="1" fill="currentColor"/>
+        <rect x="9" y="2" width="5" height="5" rx="1" fill="currentColor"/>
+        <rect x="2" y="11" width="12" height="3" rx="1" fill="currentColor"/>
+      </svg>
+    </div>
+    The Bigger Picture
+  </div>
+
+  <div class="stepper" id="stepper">
+    <div class="step active" data-step="1"><span class="dot"></span><span class="step-label">Brief</span></div>
+    <div class="divider"></div>
+    <div class="step" data-step="2"><span class="dot"></span><span class="step-label">Generate</span></div>
+    <div class="divider"></div>
+    <div class="step" data-step="3"><span class="dot"></span><span class="step-label">Download</span></div>
+  </div>
+
+  <div class="topbar-right">
+    <button class="demo-btn" id="demo-mode-btn">⚡ Demo Mode</button>
+    <div class="credits-pill"><strong>1</strong> free trial remaining</div>
+  </div>
+</header>
+
+<!-- ===== SIGNUP GATE ===== -->
+<div class="gate-overlay" id="gate-overlay">
+  <div class="gate-card">
+    <div class="badge">Free Trial</div>
+    <h2 class="display">Get your free<br>marketing pack.</h2>
+    <p>Enter your email — we'll review your request and unlock your trial within 24 hours.</p>
+    <input class="gate-input" id="gate-name" type="text" placeholder="Your name" autocomplete="name"/>
+    <input class="gate-input" id="gate-email" type="email" placeholder="Email address" autocomplete="email"/>
+    <input class="gate-input" id="gate-biz" type="text" placeholder="Business name (optional)"/>
+    <button class="gate-submit" id="gate-submit">Request Free Trial →</button>
+    <p class="gate-note">We review every signup — <strong>usually approved same day.</strong> No credit card needed.</p>
+  </div>
+</div>
+
+<!-- ===== PAGE 1: BRIEF ===== -->
+<main class="page" id="page-create">
+  <div class="prompt-grid">
+    <section>
+      <p class="prompt-eyebrow">New campaign</p>
+      <h1 class="display prompt-title">What are we<br>making <em>today?</em></h1>
+      <p class="prompt-sub">Tell us about your business. We handle the design, the copy, and the full print-ready pack — ready in under a minute.</p>
+
+      <!-- Auto-fill strip -->
+      <div class="autofill-strip">
+        <svg class="af-icon" width="22" height="22" viewBox="0 0 22 22" fill="none">
+          <circle cx="11" cy="11" r="9" stroke="currentColor" stroke-width="1.5"/>
+          <path d="M11 7v4l3 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+        </svg>
+        <div style="flex:1">
+          <div class="af-label">Auto-fill from Google Maps or Yelp</div>
+          <div class="autofill-input-row">
+            <input class="autofill-input" id="autofill-url" type="url" placeholder="Paste your Google Maps or Yelp link…"/>
+            <button class="autofill-go" id="autofill-btn">Fill →</button>
+          </div>
+          <div class="autofill-status" id="autofill-status"></div>
+        </div>
+      </div>
+
+      <fieldset>
+        <legend><span class="legend-num">01</span>Choose a format</legend>
+        <div class="type-cards" id="type-cards">
+          <button class="type-card selected" data-type="poster">
+            <div class="type-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="5" y="3" width="18" height="22" rx="2" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="8" width="10" height="1.5" rx="0.75" fill="currentColor"/><rect x="9" y="12" width="7" height="1" rx="0.5" fill="currentColor"/></svg></div>
+            <div class="type-name">Poster</div>
+            <div class="type-desc">IG, print, flyers.</div>
+          </button>
+          <button class="type-card" data-type="social">
+            <div class="type-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="3" y="5" width="22" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/><circle cx="10" cy="12" r="2" fill="currentColor"/><path d="M3 20L10 15L18 20L25 16" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg></div>
+            <div class="type-name">Social Post</div>
+            <div class="type-desc">Instagram-ready with captions.</div>
+          </button>
+          <button class="type-card" data-type="print">
+            <div class="type-icon"><svg width="28" height="28" viewBox="0 0 28 28" fill="none"><rect x="4" y="8" width="20" height="14" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M8 8V5h12v3" stroke="currentColor" stroke-width="1.5"/><rect x="8" y="14" width="12" height="2" rx="1" fill="currentColor"/></svg></div>
+            <div class="type-name">Print Pack</div>
+            <div class="type-desc">Flyer + window sign + table tent.</div>
+          </button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="legend-num">02</span>Pick a purpose</legend>
+        <div class="chips" id="purpose-chips">
+          <button class="chip selected" data-purpose="sale">Sale or promo</button>
+          <button class="chip" data-purpose="event">Event</button>
+          <button class="chip" data-purpose="launch">Product launch</button>
+          <button class="chip" data-purpose="announcement">Announcement</button>
+          <button class="chip" data-purpose="hiring">Now hiring</button>
+          <button class="chip" data-purpose="thanks">Thank you</button>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="legend-num">03</span>Your neighborhood</legend>
+        <div class="neighborhood-row">
+          <select class="city-select" id="city-select">
+            <option value="">Choose your city…</option>
+            <option value="Bellevue, WA">Bellevue, WA</option>
+            <option value="Seattle, WA">Seattle, WA</option>
+            <option value="Redmond, WA">Redmond, WA</option>
+            <option value="Kirkland, WA">Kirkland, WA</option>
+            <option value="Tacoma, WA">Tacoma, WA</option>
+            <option value="Portland, OR">Portland, OR</option>
+            <option value="New York, NY">New York, NY</option>
+            <option value="Los Angeles, CA">Los Angeles, CA</option>
+            <option value="Chicago, IL">Chicago, IL</option>
+            <option value="Other">Other</option>
+          </select>
+          <div class="hook-badge" id="neighborhood-hook" style="display:none">
+            <span class="hook-dot"></span>
+            <span id="hook-text"></span>
+          </div>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend><span class="legend-num">04</span>Tell us about it</legend>
+        <textarea class="prompt-area" id="prompt-input" placeholder="Example: 20% off all pastries this Saturday from 8am to noon. Cozy, warm vibes — coffee shop on Main Street."></textarea>
+        <div class="prompt-tips">
+          <span>Try:</span>
+          <button data-tip="Spring sale — 25% off all jewelry this weekend. Soft, romantic feel.">Spring sale</button>
+          <button data-tip="Live music tonight at 7pm. Local indie band, free entry. Moody and warm.">Live music</button>
+          <button data-tip="New cold brew arrived. Single-origin Ethiopian beans. Clean and minimal.">Coffee launch</button>
+        </div>
+        <div class="website-row">
+          <input class="website-input" id="website-input" type="url" placeholder="Your website or menu URL (for QR code)…"/>
+        </div>
+      </fieldset>
+
+      <div class="generate-row">
+        <button class="generate-btn" id="generate-btn">
+          Generate my pack
+          <span>→</span>
+        </button>
+        <p class="generate-meta">Costs <strong>1 generation</strong>.<br>Poster · IG post · Print pack · QR code.</p>
+      </div>
+    </section>
+
+    <aside class="brand-card">
+      <h3>Your brand</h3>
+      <button class="brand-edit">Edit brand DNA</button>
+      <div class="brand-row">
+        <span class="brand-label">Logo</span>
+        <span class="brand-logo-mini" id="brand-logo-mini">M</span>
+      </div>
+      <div class="brand-row">
+        <span class="brand-label">Name</span>
+        <span class="brand-value" id="brand-name-display">Marigold &amp; Co.</span>
+      </div>
+      <div class="brand-row">
+        <span class="brand-label">Colors</span>
+        <span class="swatches">
+          <span class="swatch" style="background:#1A1614"></span>
+          <span class="swatch" style="background:#DD4B25"></span>
+          <span class="swatch" style="background:#6BB39A"></span>
+          <span class="swatch" style="background:#F5F1EA"></span>
+        </span>
+      </div>
+      <div class="brand-row">
+        <span class="brand-label">Voice</span>
+        <span class="brand-value">Warm, confident</span>
+      </div>
+      <div class="brand-row">
+        <span class="brand-label">City</span>
+        <span class="brand-value" id="brand-city-display">—</span>
+      </div>
+    </aside>
+  </div>
+</main>
+
+<!-- ===== DEMO MODE PAGE ===== -->
+<div class="demo-page" id="page-demo" hidden>
+  <button class="demo-back" id="demo-back">← Back</button>
+  <div class="demo-header">
+    <div class="badge">⚡ Walk-In Demo Mode</div>
+    <h2 class="display">Live demo in<br>20 seconds.</h2>
+    <p>Type any business name and watch The Bigger Picture build their marketing instantly.<br>Perfect for showing clients on your phone.</p>
+  </div>
+  <div class="demo-form">
+    <div class="demo-field">
+      <label>Business Name</label>
+      <input type="text" id="demo-biz-name" placeholder="e.g. Pho Sriracha, Main Street Bakery…"/>
+    </div>
+    <div class="demo-field">
+      <label>Business Type</label>
+      <select id="demo-biz-type">
+        <option value="restaurant">Restaurant / Café</option>
+        <option value="retail">Retail / Boutique</option>
+        <option value="salon">Salon / Spa</option>
+        <option value="gym">Gym / Fitness</option>
+        <option value="bakery">Bakery / Desserts</option>
+        <option value="bar">Bar / Nightlife</option>
+        <option value="service">Local Service</option>
+        <option value="other">Other</option>
+      </select>
+    </div>
+    <div class="demo-field">
+      <label>Campaign Type</label>
+      <select id="demo-campaign">
+        <option value="sale">Sale or promo</option>
+        <option value="event">Event / Grand opening</option>
+        <option value="launch">New product launch</option>
+        <option value="hiring">Now hiring</option>
+      </select>
+    </div>
+    <button class="demo-launch" id="demo-launch-btn">Generate Live Demo →</button>
+  </div>
+</div>
+
+<!-- ===== PAGE 2: RESULTS ===== -->
+<main class="page" id="page-results" hidden>
+  <button class="back-link" id="back-btn">← Back to brief</button>
+
+  <div class="results-header">
+    <div>
+      <h2 class="display">Pick your <em>favorite.</em></h2>
+      <p class="results-meta" id="results-meta">3 variants · Full print pack included</p>
+    </div>
+  </div>
+
+  <div class="results-layout">
+    <div>
+      <!-- Output type tabs -->
+      <div class="output-tabs" id="output-tabs">
+        <button class="output-tab active" data-output="poster">Poster</button>
+        <button class="output-tab" data-output="social">IG Post</button>
+        <button class="output-tab" data-output="tent">Table Tent</button>
+        <button class="output-tab" data-output="window">Window Sign</button>
+      </div>
+
+      <!-- Before/After toggle -->
+      <div class="ba-toggle">
+        <div class="ba-switch" id="ba-switch"></div>
+        <span id="ba-label">Show Before / After</span>
+      </div>
+
+      <!-- Main preview -->
+      <div class="preview-stage" id="preview-stage"></div>
+
+      <!-- Before/After panel -->
+      <div class="ba-panel" id="ba-panel">
+        <div class="ba-half">
+          <div class="ba-label">Before</div>
+          <div class="ig-mock">
+            <div class="ig-mock-header">
+              <div class="ig-avatar" id="ba-avatar-before">M</div>
+              <div class="ig-name" id="ba-name-before">marigoldandco</div>
+            </div>
+            <div class="ig-img-area before"><span>No recent posts</span></div>
+            <div class="ig-caption" style="color:#888;font-family:-apple-system,sans-serif;font-size:11px">No bio · 0 posts</div>
+          </div>
+        </div>
+        <div class="ba-half">
+          <div class="ba-label after">After ✦</div>
+          <div class="ig-mock">
+            <div class="ig-mock-header">
+              <div class="ig-avatar" id="ba-avatar-after">M</div>
+              <div class="ig-name" id="ba-name-after">marigoldandco</div>
+            </div>
+            <div class="ig-img-area" id="ba-img-after"></div>
+            <div class="ig-caption">
+              <div id="ba-caption-after" style="font-family:-apple-system,sans-serif;font-size:11px"></div>
+              <div class="ig-hashtags" id="ba-hashtags-after" style="font-size:11px"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Variant thumbnails -->
+      <div class="variant-strip" id="variant-strip"></div>
+    </div>
+
+    <aside class="actions-card">
+      <!-- QR code section -->
+      <h4>QR Code</h4>
+      <div class="qr-section">
+        <img id="qr-preview" src="" alt="QR Code"/>
+        <div class="qr-info">
+          <div class="qr-title">Scan to visit</div>
+          <div class="qr-url" id="qr-url-display">your-website.com</div>
+          <button class="qr-edit" id="qr-edit-btn">Change URL</button>
+        </div>
+      </div>
+
+      <h4>Captions &amp; Hashtags</h4>
+      <div style="background:var(--bg);border:1px solid var(--rule);border-radius:10px;padding:14px;margin-bottom:20px;font-size:13px;line-height:1.6;color:var(--ink-soft)" id="caption-box">
+        Loading caption…
+      </div>
+
+      <h4>Refine</h4>
+      <ul class="edit-list">
+        <li><button data-edit="text">Edit text <span class="arrow">→</span></button></li>
+        <li><button data-edit="layout">Adjust layout <span class="arrow">→</span></button></li>
+        <li><button data-edit="regen">Try again <span class="arrow">↻</span></button></li>
+      </ul>
+
+      <h4>Export</h4>
+      <div class="format-row" id="format-row">
+        <button class="format-pill selected" data-format="png">PNG<span class="px">1080×1350</span></button>
+        <button class="format-pill" data-format="jpg">JPG<span class="px">1080px</span></button>
+        <button class="format-pill" data-format="pdf">PDF<span class="px">Print</span></button>
+      </div>
+
+      <button class="download-btn" id="download-btn">
+        Download
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M7 10L4 7M7 10L10 7M2 12.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+
+      <button class="post-btn" id="post-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+        Post to Instagram
+      </button>
+
+      <p class="pack-note">
+        <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M2 7L5 10L11 4" stroke="#2A7A4B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Full print pack included — all 4 formats
+      </p>
+    </aside>
+  </div>
+</main>
+
+<!-- ===== LOADING ===== -->
+<div class="loading-overlay" id="loading" hidden>
+  <div class="loading-card">
+    <div class="anim"><div></div><div></div><div></div></div>
+    <h3 class="display">Building your pack…</h3>
+    <p>Pulling in your brand, location, and campaign details.</p>
+    <p class="loading-status" id="loading-status">Reading your brief</p>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ---------- State ----------
+  const state = {
+    type: 'poster',
+    purpose: 'sale',
+    prompt: '',
+    selected: 0,
+    format: 'png',
+    output: 'poster',
+    businessName: 'Marigold & Co.',
+    city: '',
+    website: 'https://your-website.com',
+    baVisible: false,
+    gateOpen: true,
+  };
+
+  // ---------- Neighborhood hooks ----------
+  const hooks = {
+    'Bellevue, WA': ['Bellevue Arts & Crafts Fair this month — tie in handmade vibes', 'Bellevue Square shoppers peak on weekends — perfect for a promo', 'Spring blooms in Bellevue — lean into fresh and seasonal'],
+    'Seattle, WA': ['Seattle Restaurant Week is coming — great time to push a deal', 'Rain season — indoor, cozy messaging works great right now', 'Farmers market season — local and fresh angles resonate'],
+    'Redmond, WA': ['Tech crowd in Redmond — clean, modern tone lands well', 'Redmond Derby Days coming up — community event hook available'],
+    'Kirkland, WA': ['Kirkland waterfront foot traffic peaks on sunny weekends', 'Local Kirkland art walk this month — creative theme opportunity'],
+    'Tacoma, WA': ['Tacoma Night Market season — evening event energy works well', 'Point Defiance Zoo events drawing families — family angle strong'],
+  };
+
+  // ---------- Gate ----------
+  const gateOverlay = document.getElementById('gate-overlay');
+  const gateSubmit = document.getElementById('gate-submit');
+
+  gateSubmit.addEventListener('click', () => {
+    const name = document.getElementById('gate-name').value.trim();
+    const email = document.getElementById('gate-email').value.trim();
+    if (!name || !email) {
+      showToast('Please enter your name and email.');
+      return;
+    }
+    if (!email.includes('@')) {
+      showToast('Please enter a valid email address.');
+      return;
+    }
+    gateOverlay.hidden = true;
+    state.gateOpen = false;
+    showToast('✓ Request submitted! You\'re in — enjoy your free trial.');
+  });
+
+  // ---------- Demo Mode ----------
+  document.getElementById('demo-mode-btn').addEventListener('click', () => {
+    document.getElementById('page-create').hidden = true;
+    document.getElementById('page-results').hidden = true;
+    document.getElementById('page-demo').hidden = false;
+  });
+
+  document.getElementById('demo-back').addEventListener('click', () => {
+    document.getElementById('page-demo').hidden = true;
+    document.getElementById('page-create').hidden = false;
+  });
+
+  document.getElementById('demo-launch-btn').addEventListener('click', () => {
+    const bizName = document.getElementById('demo-biz-name').value.trim();
+    const bizType = document.getElementById('demo-biz-type').value;
+    const campaign = document.getElementById('demo-campaign').value;
+    if (!bizName) {
+      showToast('Enter a business name to demo.');
+      return;
+    }
+    // Pre-fill state from demo inputs
+    state.businessName = bizName;
+    state.type = 'poster';
+    state.purpose = campaign;
+    const typeLabels = { restaurant: 'restaurant', retail: 'boutique', salon: 'salon', gym: 'gym', bakery: 'bakery', bar: 'bar', service: 'local business', other: 'business' };
+    state.prompt = `${bizName} — ${typeLabels[bizType]} running a ${campaign} campaign. Local, authentic, community-driven vibe.`;
+    document.getElementById('page-demo').hidden = true;
+    runGeneration();
+  });
+
+  // ---------- Auto-fill ----------
+  document.getElementById('autofill-btn').addEventListener('click', () => {
+    const url = document.getElementById('autofill-url').value.trim();
+    if (!url) return;
+    const status = document.getElementById('autofill-status');
+    status.textContent = 'Scanning business info…';
+    status.classList.add('visible');
+    // Simulate scrape (real version calls backend API)
+    setTimeout(() => {
+      const mockNames = ['The Golden Spoon', 'Pho Sriracha', 'Main Street Bakery', 'Blue Bottle Coffee', 'Sunrise Salon'];
+      const mock = mockNames[Math.floor(Math.random() * mockNames.length)];
+      document.getElementById('prompt-input').value = `${mock} — welcoming neighborhood spot known for quality and warm hospitality. Running a weekend promo.`;
+      state.prompt = document.getElementById('prompt-input').value;
+      state.businessName = mock;
+      document.getElementById('brand-name-display').textContent = mock;
+      document.getElementById('brand-logo-mini').textContent = mock[0];
+      if (url.includes('yelp')) {
+        document.getElementById('website-input').value = url;
+        state.website = url;
+      }
+      status.textContent = '✓ Business info filled in from your listing.';
+    }, 1800);
+  });
+
+  // ---------- Brief interactions ----------
+  document.getElementById('type-cards').addEventListener('click', e => {
+    const card = e.target.closest('.type-card');
+    if (!card) return;
+    document.querySelectorAll('.type-card').forEach(c => c.classList.remove('selected'));
+    card.classList.add('selected');
+    state.type = card.dataset.type;
+  });
+
+  document.getElementById('purpose-chips').addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('selected'));
+    chip.classList.add('selected');
+    state.purpose = chip.dataset.purpose;
+  });
+
+  document.getElementById('city-select').addEventListener('change', e => {
+    state.city = e.target.value;
+    document.getElementById('brand-city-display').textContent = e.target.value || '—';
+    const hookEl = document.getElementById('neighborhood-hook');
+    const hookText = document.getElementById('hook-text');
+    const cityHooks = hooks[e.target.value];
+    if (cityHooks) {
+      hookText.textContent = cityHooks[Math.floor(Math.random() * cityHooks.length)];
+      hookEl.style.display = 'flex';
+    } else {
+      hookEl.style.display = 'none';
+    }
+  });
+
+  document.querySelectorAll('.prompt-tips button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const ta = document.getElementById('prompt-input');
+      ta.value = btn.dataset.tip;
+      state.prompt = btn.dataset.tip;
+      ta.focus();
+    });
+  });
+
+  document.getElementById('prompt-input').addEventListener('input', e => { state.prompt = e.target.value; });
+  document.getElementById('website-input').addEventListener('input', e => {
+    state.website = e.target.value || 'https://your-website.com';
+  });
+
+  // ---------- Generate ----------
+  document.getElementById('generate-btn').addEventListener('click', () => {
+    if (!state.prompt.trim()) {
+      const ta = document.getElementById('prompt-input');
+      ta.focus(); ta.style.borderColor = 'var(--accent)';
+      setTimeout(() => ta.style.borderColor = '', 1200);
+      return;
+    }
+    runGeneration();
+  });
+
+  function setStep(n) {
+    document.querySelectorAll('.stepper .step').forEach(s => {
+      const num = parseInt(s.dataset.step);
+      s.classList.toggle('active', num === n);
+      s.classList.toggle('done', num < n);
+    });
+  }
+
+  async function runGeneration() {
+    const overlay = document.getElementById('loading');
+    const status = document.getElementById('loading-status');
+    document.getElementById('page-create').hidden = true;
+    document.getElementById('page-results').hidden = true;
+    overlay.hidden = false;
+    setStep(2);
+    const phases = [
+      { t: 'Reading your brief', d: 600 },
+      { t: 'Pulling brand DNA', d: 600 },
+      { t: 'Generating variant 1 of 3', d: 700 },
+      { t: 'Generating variant 2 of 3', d: 600 },
+      { t: 'Generating variant 3 of 3', d: 600 },
+      { t: 'Adding QR code & captions', d: 500 },
+      { t: 'Preparing print pack', d: 400 },
+    ];
+    for (const p of phases) {
+      status.textContent = p.t;
+      await new Promise(r => setTimeout(r, p.d));
+    }
+    overlay.hidden = true;
+    showResults();
+  }
+
+  // ---------- Parse prompt ----------
+  function parsePrompt(text) {
+    if (!text) return { head: 'Something new', sub: 'Check us out', meta: state.businessName };
+    const lower = text.toLowerCase();
+    let head = '';
+    const pct = text.match(/(\d{1,2})\s*%\s*off/i);
+    if (pct) head = pct[0];
+    else if (lower.includes('sale')) head = 'Sale';
+    else if (lower.includes('launch') || lower.includes('new')) head = 'Just launched';
+    else if (lower.includes('event') || lower.includes('tonight')) head = 'Tonight';
+    else if (lower.includes('hiring')) head = 'We\'re hiring';
+    else if (lower.includes('thank')) head = 'Thank you';
+    else head = text.split(/[.!?,]/)[0].trim().slice(0, 22);
+    const sentences = text.split(/[.!?]/).map(s => s.trim()).filter(Boolean);
+    const sub = sentences[0]?.slice(0, 55) || '';
+    return { head, sub, meta: state.businessName };
+  }
+
+  function qrUrl(data) {
+    return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(data)}&format=png&color=1A1614&bgcolor=FBF8F2&margin=4`;
+  }
+
+  function esc(s) {
+    return String(s || '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  // ---------- Make variants ----------
+  function makePoster(idx, p) {
+    const qr = qrUrl(state.website);
+    if (idx === 0) return `<div class="poster poster--a">
+      <div class="eyebrow">— ${state.purpose === 'sale' ? 'This week only' : state.city || 'Just for you'}</div>
+      <div class="head">${esc(p.head)}<br><em>this</em><br>weekend.</div>
+      <div class="meta"><span>${esc(p.sub) || 'Saturday from 8am'}</span><div class="qr-corner"><img src="${qr}" alt="QR"/></div><span class="brand-stamp">${esc(state.businessName.split(' ')[0])}</span></div>
+    </div>`;
+    if (idx === 1) return `<div class="poster poster--b">
+      <div class="top"><div class="label">${esc(state.businessName)}</div><div class="top-head">${esc(p.head)}.</div></div>
+      <div class="bot"><div class="bot-head"><em>${state.purpose === 'sale' ? 'Save big.' : 'Be there.'}</em></div><div class="bot-meta"><span>${esc(p.sub) || 'Details inside'}</span><div class="qr-corner"><img src="${qr}" alt="QR"/></div></div></div>
+    </div>`;
+    return `<div class="poster poster--c">
+      <div class="ribbon">— ${esc(state.businessName)}</div>
+      <div class="head-c">${esc(p.head)} <em>made&nbsp;easy.</em></div>
+      <div class="meta-c">${esc(p.sub) || 'This weekend only'}<div class="qr-corner"><img src="${qr}" alt="QR"/></div></div>
+    </div>`;
+  }
+
+  function makeSocialPost(idx, p) {
+    const qr = qrUrl(state.website);
+    const captions = [
+      `✨ Big news from ${state.businessName}! ${p.sub}. Don't miss out — link in bio.`,
+      `We've got something special for you. ${p.head} — ${p.sub}. Tap the link to learn more!`,
+      `${state.city ? state.city + ' — ' : ''}${p.sub}. Come see us! Link in bio 🔗`,
+    ];
+    const poster = makePoster(idx, p);
+    return `<div class="ig-output">
+      <div class="ig-output-header">
+        <div class="ig-output-avatar">${state.businessName[0]}</div>
+        <div><div class="ig-output-name">${state.businessName.toLowerCase().replace(/[^a-z0-9]/g,'')}</div><div class="ig-output-loc">${state.city || 'Local Business'}</div></div>
+      </div>
+      <div class="ig-output-img">${poster}</div>
+      <div class="ig-output-actions">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><line x1="22" y1="2" x2="11" y2="13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><polygon points="22 2 15 22 11 13 2 9 22 2" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round" fill="none"/></svg>
+      </div>
+      <div class="ig-output-caption"><strong>${state.businessName.toLowerCase().replace(/[^a-z0-9]/g,'')}</strong> ${esc(captions[idx])}</div>
+    </div>`;
+  }
+
+  function makeTent(idx, p) {
+    const qr = qrUrl(state.website);
+    const colors = [['var(--ink)', 'var(--bg)', 'var(--accent)'], ['#2B5DD6', '#EEF2FF', '#DD4B25'], ['#2A7A4B', '#E6F4EC', '#1A1614']];
+    const [bg, fg, ac] = colors[idx];
+    return `<div class="tent-card" style="flex-direction:row">
+      <div class="tent-left" style="background:${bg};color:${fg}">
+        <div class="tent-label" style="color:${ac}">${state.businessName}</div>
+        <div class="tent-head">${esc(p.head)}</div>
+        <div class="tent-sub">${esc(p.sub) || 'Ask our team for details'}</div>
+      </div>
+      <div class="tent-right" style="background:${ac}">
+        <div class="qr-wrap"><img src="${qr}" alt="QR Code"/></div>
+        <div class="scan-text">Scan to visit</div>
+      </div>
+    </div>`;
+  }
+
+  function makeWindow(idx, p) {
+    const qr = qrUrl(state.website);
+    const borders = ['var(--ink)', 'var(--accent)', 'var(--brand-blue)'];
+    return `<div class="window-sign" style="border-color:${borders[idx]}">
+      <div class="ws-top">${state.businessName} · ${state.city || 'Local'}</div>
+      <div class="ws-head">${esc(p.head)} <em>here.</em></div>
+      <div class="ws-bot">
+        <div class="ws-qr"><img src="${qr}" alt="QR Code"/></div>
+        <div class="ws-name">Scan to learn more</div>
+      </div>
+    </div>`;
+  }
+
+  function makeOutput(idx, p) {
+    switch (state.output) {
+      case 'social': return makeSocialPost(idx, p);
+      case 'tent': return makeTent(idx, p);
+      case 'window': return makeWindow(idx, p);
+      default: return makePoster(idx, p);
+    }
+  }
+
+  function getCaptions(p) {
+    const tags = {
+      sale: `#sale #deals #local${state.city ? '#' + state.city.split(',')[0].toLowerCase().replace(/\s/g,'') : ''} #shoplocal #smallbusiness`,
+      event: `#event #local #community${state.city ? '#' + state.city.split(',')[0].toLowerCase().replace(/\s/g,'') : ''} #tonight`,
+      launch: `#newproduct #launch #${state.businessName.split(' ')[0].toLowerCase()} #smallbusiness #shoplocal`,
+      hiring: `#hiring #nowhiring #jobopening #${state.city ? state.city.split(',')[0].toLowerCase().replace(/\s/g,'') + 'jobs' : 'localjobs'}`,
+      announcement: `#announcement #news #${state.businessName.split(' ')[0].toLowerCase()} #community`,
+      thanks: `#grateful #community #thankyou #smallbusiness #local`,
+    };
+    return {
+      caption: `✨ ${p.sub || p.head} — stop by and see us${state.city ? ' in ' + state.city.split(',')[0] : ''}! Link in bio for more details.`,
+      hashtags: tags[state.purpose] || tags.sale,
+    };
+  }
+
+  // ---------- Results render ----------
+  function renderPreview() {
+    const p = parsePrompt(state.prompt);
+    document.getElementById('preview-stage').innerHTML = makeOutput(state.selected, p);
+
+    // Variant strip
+    const strip = document.getElementById('variant-strip');
+    strip.innerHTML = '';
+    [0, 1, 2].forEach(i => {
+      const btn = document.createElement('button');
+      btn.className = 'variant-thumb' + (i === state.selected ? ' selected' : '');
+      btn.innerHTML = `<div class="poster-mini">${makePoster(i, p)}</div>`;
+      btn.addEventListener('click', () => { state.selected = i; renderPreview(); });
+      strip.appendChild(btn);
+    });
+
+    // QR
+    const qrImg = document.getElementById('qr-preview');
+    qrImg.src = qrUrl(state.website);
+    const display = state.website.replace('https://','').replace('http://','').split('/')[0];
+    document.getElementById('qr-url-display').textContent = display;
+
+    // Caption
+    const caps = getCaptions(p);
+    document.getElementById('caption-box').innerHTML = `<div style="margin-bottom:8px">${esc(caps.caption)}</div><div style="color:#2B5DD6;font-size:12px">${esc(caps.hashtags)}</div>`;
+
+    // Before/After
+    const biz = state.businessName;
+    const handle = biz.toLowerCase().replace(/[^a-z0-9]/g,'');
+    document.getElementById('ba-avatar-before').textContent = biz[0];
+    document.getElementById('ba-avatar-after').textContent = biz[0];
+    document.getElementById('ba-name-before').textContent = handle;
+    document.getElementById('ba-name-after').textContent = handle;
+    document.getElementById('ba-img-after').innerHTML = `<div style="transform:scale(0.55);transform-origin:top left;width:182%;height:182%">${makePoster(state.selected, p)}</div>`;
+    document.getElementById('ba-caption-after').textContent = caps.caption;
+    document.getElementById('ba-hashtags-after').textContent = caps.hashtags;
+
+    document.getElementById('results-meta').textContent = `3 variants · ${state.output.charAt(0).toUpperCase()+state.output.slice(1)} · ${state.businessName}`;
+  }
+
+  function showResults() {
+    document.getElementById('page-create').hidden = true;
+    document.getElementById('page-demo').hidden = true;
+    document.getElementById('page-results').hidden = false;
+    setStep(3);
+    state.selected = 0;
+    renderPreview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  // ---------- Output tabs ----------
+  document.getElementById('output-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('.output-tab');
+    if (!tab) return;
+    document.querySelectorAll('.output-tab').forEach(t => t.classList.remove('active'));
+    tab.classList.add('active');
+    state.output = tab.dataset.output;
+    renderPreview();
+  });
+
+  // ---------- Before/After ----------
+  const baSwitch = document.getElementById('ba-switch');
+  baSwitch.addEventListener('click', () => {
+    state.baVisible = !state.baVisible;
+    baSwitch.classList.toggle('on', state.baVisible);
+    document.getElementById('ba-label').textContent = state.baVisible ? 'Before / After (on)' : 'Show Before / After';
+    document.getElementById('ba-panel').classList.toggle('visible', state.baVisible);
+    document.getElementById('preview-stage').style.display = state.baVisible ? 'none' : '';
+  });
+
+  // ---------- Back ----------
+  document.getElementById('back-btn').addEventListener('click', () => {
+    document.getElementById('page-create').hidden = false;
+    document.getElementById('page-results').hidden = true;
+    setStep(1);
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ---------- Format & download ----------
+  document.getElementById('format-row').addEventListener('click', e => {
+    const pill = e.target.closest('.format-pill');
+    if (!pill) return;
+    document.querySelectorAll('.format-pill').forEach(p => p.classList.remove('selected'));
+    pill.classList.add('selected');
+    state.format = pill.dataset.format;
+  });
+
+  document.getElementById('download-btn').addEventListener('click', () => {
+    showToast(`✓ Variant ${state.selected + 1} saved as ${state.format.toUpperCase()} · Full print pack included`);
+  });
+
+  document.getElementById('post-btn').addEventListener('click', () => {
+    showToast('Instagram scheduling — coming in V2!');
+  });
+
+  document.getElementById('qr-edit-btn').addEventListener('click', () => {
+    const url = prompt('Enter the URL for your QR code:', state.website);
+    if (url) { state.website = url; renderPreview(); }
+  });
+
+  // ---------- Edit actions ----------
+  document.querySelectorAll('.edit-list button').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const a = btn.dataset.edit;
+      if (a === 'regen') { runGeneration(); }
+      else { showToast(`${{ text: 'Text editor', layout: 'Layout tools' }[a]} — coming soon`); }
+    });
+  });
+
+  // ---------- Toast ----------
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.innerHTML = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  // ---------- City hook refresh on load ----------
+  document.getElementById('city-select').dispatchEvent(new Event('change'));
+</script>

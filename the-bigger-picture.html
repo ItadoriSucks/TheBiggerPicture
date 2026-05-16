@@ -554,12 +554,12 @@
 
   <div class="topbar-right">
     <button class="demo-btn" id="demo-mode-btn">⚡ Demo Mode</button>
-    <div class="credits-pill"><strong>1</strong> free trial remaining</div>
+    <div class="credits-pill"><strong>Full</strong> Access</div>
   </div>
 </header>
 
 <!-- ===== SIGNUP GATE ===== -->
-<div class="gate-overlay" id="gate-overlay">
+<div class="gate-overlay" id="gate-overlay" hidden>
   <div class="gate-card">
     <div class="badge">Free Trial</div>
     <h2 class="display">Get your free<br>marketing pack.</h2>
@@ -877,7 +877,7 @@
     selected: 0, format: 'png', output: 'poster',
     businessName: 'Marigold & Co.', city: '',
     website: 'https://your-website.com',
-    baVisible: false, gateOpen: true, seed: 1,
+    baVisible: false, gateOpen: false, seed: 1,
   };
 
   // ---- Seeded RNG (xorshift32) ----

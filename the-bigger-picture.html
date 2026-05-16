@@ -518,11 +518,73 @@
   .toast { position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(80px); background: var(--ink); color: var(--bg); padding: 13px 22px; border-radius: 100px; font-size: 14px; z-index: 200; transition: transform 0.3s ease; display: flex; align-items: center; gap: 8px; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
+  /* ---- Editor Page ---- */
+  .editor-layout { display: grid; grid-template-columns: 1fr 360px; gap: 48px; align-items: start; }
+  .editor-title { font-family: 'Fraunces', serif; font-size: clamp(28px,4vw,40px); font-weight: 400; letter-spacing: -0.025em; margin-bottom: 6px; }
+  .editor-title em { font-style: italic; color: var(--accent); }
+  .editor-sub { color: var(--ink-soft); font-size: 15px; margin-bottom: 32px; }
+
+  .editor-tabs { display: flex; gap: 4px; background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 10px; padding: 4px; margin-bottom: 20px; }
+  .editor-tab { flex: 1; appearance: none; background: transparent; border: 0; border-radius: 7px; padding: 9px 8px; font-family: inherit; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; }
+  .editor-tab:hover { color: var(--ink); }
+  .editor-tab.active { background: var(--ink); color: var(--bg); }
+
+  .editor-section { display: flex; flex-direction: column; gap: 8px; }
+  .e-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.1em; color: var(--ink-faint); font-weight: 500; }
+  .editor-input { width: 100%; padding: 12px 14px; background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 10px; font-family: inherit; font-size: 14px; color: var(--ink); transition: border-color 0.15s; }
+  .editor-input:focus { outline: none; border-color: var(--ink); }
+  .editor-input::placeholder { color: var(--ink-faint); }
+
+  .layout-grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .layout-opt { appearance: none; background: transparent; border: 2px solid var(--rule); border-radius: 10px; padding: 0; cursor: pointer; overflow: hidden; aspect-ratio: 4/5; transition: all 0.15s; position: relative; }
+  .layout-opt:hover { border-color: var(--rule-strong); }
+  .layout-opt.selected { border-color: var(--accent); }
+  .layout-opt.selected::after { content: "\2713"; position: absolute; top: 5px; right: 5px; background: var(--accent); color: white; width: 20px; height: 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; z-index: 2; }
+  .layout-opt .poster-mini { transform: scale(0.28); transform-origin: top left; width: 357%; height: 357%; pointer-events: none; }
+  .layout-opt-label { position: absolute; bottom: 0; left: 0; right: 0; text-align: center; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.08em; color: var(--ink-faint); padding-bottom: 6px; background: linear-gradient(transparent, var(--bg-elevated)); }
+
+  .color-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--rule); }
+  .color-row:first-of-type { border-top: 1px solid var(--rule); }
+  .color-row .e-label { flex: 1; margin: 0; }
+  .color-swatch-input { -webkit-appearance: none; appearance: none; width: 42px; height: 42px; border: 2px solid var(--rule); border-radius: 8px; padding: 3px; cursor: pointer; background: none; }
+  .color-swatch-input::-webkit-color-swatch-wrapper { padding: 0; }
+  .color-swatch-input::-webkit-color-swatch { border: none; border-radius: 5px; }
+  .color-hex { font-size: 12px; color: var(--ink-soft); font-family: monospace; width: 64px; }
+  .reset-btn { appearance: none; background: none; border: 1px solid var(--rule-strong); border-radius: 8px; padding: 9px 14px; font-family: inherit; font-size: 13px; color: var(--ink-soft); cursor: pointer; transition: all 0.15s; }
+  .reset-btn:hover { border-color: var(--ink); color: var(--ink); }
+  .theme-dots { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+  .theme-dot { width: 40px; height: 40px; border-radius: 8px; border: 2px solid transparent; cursor: pointer; transition: all 0.15s; overflow: hidden; display: flex; flex-direction: column; }
+  .theme-dot:hover, .theme-dot.selected { border-color: var(--ink); box-shadow: 0 0 0 2px var(--bg), 0 0 0 4px var(--ink); }
+  .theme-dot-main { flex: 1; }
+  .theme-dot-acc { height: 10px; }
+
+  .image-drop { border: 2px dashed var(--rule-strong); border-radius: 14px; padding: 32px 20px; text-align: center; cursor: pointer; transition: all 0.18s; position: relative; overflow: hidden; }
+  .image-drop:hover, .image-drop.dragover { border-color: var(--accent); background: var(--accent-soft); }
+  .image-drop-icon { color: var(--ink-faint); margin: 0 auto 12px; display: flex; justify-content: center; }
+  .image-drop p { font-size: 14px; color: var(--ink-soft); margin-bottom: 4px; }
+  .image-drop small { font-size: 12px; color: var(--ink-faint); }
+  .img-preview-row { display: none; align-items: center; gap: 12px; background: var(--bg-elevated); border: 1px solid var(--rule); border-radius: 10px; padding: 12px; }
+  .img-preview-row.show { display: flex; }
+  .img-preview-row img { width: 52px; height: 52px; object-fit: cover; border-radius: 6px; border: 1px solid var(--rule); }
+  .img-filename { flex: 1; font-size: 13px; color: var(--ink-soft); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .remove-img-btn { appearance: none; background: none; border: 0; color: var(--ink-faint); cursor: pointer; font-size: 22px; line-height: 1; padding: 2px 6px; }
+  .remove-img-btn:hover { color: var(--accent); }
+  .range-input { width: 100%; -webkit-appearance: none; appearance: none; height: 4px; border-radius: 2px; background: var(--rule-strong); outline: none; cursor: pointer; margin: 4px 0; }
+  .range-input::-webkit-slider-thumb { -webkit-appearance: none; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); cursor: pointer; border: 2px solid white; box-shadow: 0 1px 4px rgba(0,0,0,0.15); }
+
+  .apply-btn { width: 100%; appearance: none; background: var(--ink); color: var(--bg); border: 0; padding: 16px; border-radius: 100px; font-family: 'Fraunces', serif; font-size: 18px; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 24px; }
+  .apply-btn:hover { background: var(--accent); transform: translateY(-1px); }
+
+  /* Poster image overlays */
+  .poster-bg-img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0; pointer-events: none; }
+  .poster-logo-img { position: absolute; bottom: 44px; left: 36px; width: 60px; height: 60px; object-fit: contain; border-radius: 8px; background: rgba(255,255,255,0.9); padding: 4px; box-shadow: 0 2px 8px rgba(0,0,0,0.15); z-index: 2; pointer-events: none; }
+  .poster > * { position: relative; z-index: 1; }
+
   @media (max-width: 900px) {
     .topbar { padding: 16px 20px; }
     .stepper .step-label { display: none; }
     .page, .demo-page { padding: 32px 20px 64px; }
-    .prompt-grid, .results-layout { grid-template-columns: 1fr; gap: 28px; }
+    .prompt-grid, .results-layout, .editor-layout { grid-template-columns: 1fr; gap: 28px; }
     .brand-card, .actions-card { position: static; }
     .type-cards { grid-template-columns: 1fr; }
     .poster { width: 100%; max-width: 400px; height: auto; aspect-ratio: 4/5; }
@@ -858,6 +920,87 @@
   </div>
 </main>
 
+<!-- ===== PAGE EDIT ===== -->
+<div class="page" id="page-edit" hidden>
+  <button class="back-link" id="editor-back-btn">&#8592; Back to results</button>
+  <h2 class="editor-title display">Edit your <em>design.</em></h2>
+  <p class="editor-sub" style="color:var(--ink-soft);margin-bottom:32px">Changes apply live to the preview below.</p>
+  <div class="editor-layout">
+    <div>
+      <div class="preview-stage" id="editor-preview-stage"></div>
+    </div>
+    <div>
+      <div class="editor-tabs" id="editor-tabs">
+        <button class="editor-tab active" data-etab="text">Text</button>
+        <button class="editor-tab" data-etab="layout">Layout</button>
+        <button class="editor-tab" data-etab="colors">Colors</button>
+        <button class="editor-tab" data-etab="image">Image</button>
+      </div>
+
+      <div class="editor-section" id="etab-text">
+        <label class="e-label">Headline</label>
+        <input class="editor-input" id="edit-head" type="text" placeholder="e.g. Big Sale" maxlength="28">
+        <label class="e-label">Subheading</label>
+        <input class="editor-input" id="edit-sub" type="text" placeholder="e.g. Up to 50% off this weekend" maxlength="60">
+        <label class="e-label">Eyebrow tag</label>
+        <input class="editor-input" id="edit-eyebrow" type="text" placeholder="e.g. This week only" maxlength="24">
+        <label class="e-label">Ribbon label</label>
+        <input class="editor-input" id="edit-ribbon" type="text" placeholder="e.g. Limited time" maxlength="20">
+      </div>
+
+      <div class="editor-section" id="etab-layout" hidden>
+        <label class="e-label">Choose a layout</label>
+        <div class="layout-grid-3" id="layout-grid"></div>
+      </div>
+
+      <div class="editor-section" id="etab-colors" hidden>
+        <label class="e-label">Theme presets</label>
+        <div class="theme-dots" id="theme-dots"></div>
+        <div class="color-row">
+          <label class="e-label">Background</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="color-swatch-input" type="color" id="color-bg">
+            <input class="color-hex editor-input" id="hex-bg" type="text" maxlength="7" placeholder="#DD4B25">
+          </div>
+        </div>
+        <div class="color-row">
+          <label class="e-label">Text color</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="color-swatch-input" type="color" id="color-fg">
+            <input class="color-hex editor-input" id="hex-fg" type="text" maxlength="7" placeholder="#FBF8F2">
+          </div>
+        </div>
+        <div class="color-row">
+          <label class="e-label">Accent color</label>
+          <div style="display:flex;gap:8px;align-items:center">
+            <input class="color-swatch-input" type="color" id="color-ac">
+            <input class="color-hex editor-input" id="hex-ac" type="text" maxlength="7" placeholder="#1A1614">
+          </div>
+        </div>
+        <button class="reset-btn" id="reset-colors-btn">Reset to original palette</button>
+      </div>
+
+      <div class="editor-section" id="etab-image" hidden>
+        <label class="e-label">Upload background image</label>
+        <label class="image-drop" id="image-drop-zone">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" style="opacity:.4"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          <span id="drop-label">Drop image here or click to upload</span>
+          <input type="file" id="image-upload" accept="image/*" style="display:none">
+        </label>
+        <div class="img-preview-row" id="img-preview-row">
+          <span class="img-filename" id="img-filename"></span>
+          <button class="remove-img-btn" id="remove-img-btn">Remove</button>
+        </div>
+        <label class="e-label" style="margin-top:16px">Image opacity</label>
+        <input class="range-input" type="range" id="img-opacity" min="10" max="100" value="40">
+        <div style="text-align:right;font-size:12px;color:var(--ink-faint);margin-top:4px"><span id="opacity-val">40</span>%</div>
+      </div>
+
+      <button class="apply-btn" id="editor-apply-btn">Apply &amp; return to results</button>
+    </div>
+  </div>
+</div>
+
 <!-- ===== LOADING ===== -->
 <div class="loading-overlay" id="loading" hidden>
   <div class="loading-card">
@@ -878,6 +1021,7 @@
     businessName: 'Marigold & Co.', city: '',
     website: 'https://your-website.com',
     baVisible: false, gateOpen: false, seed: 1,
+    edits: { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 },
   };
 
   // ---- Seeded RNG (xorshift32) ----
@@ -998,6 +1142,23 @@
     };
   }
 
+  // Returns parsed content with editor overrides applied for the selected variant
+  function getContent(variantOffset, idx) {
+    const c = parseContent(variantOffset);
+    if (idx !== state.selected) return c;
+    const e = state.edits;
+    return {
+      head:     e.head    || c.head,
+      sub:      e.sub     || c.sub,
+      eyebrow:  e.eyebrow || c.eyebrow,
+      ribbon:   e.ribbon  || c.ribbon,
+      closing:  c.closing,
+      weekword: c.weekword,
+      hereword: c.hereword,
+      phrase:   c.phrase,
+    };
+  }
+
   // ---- Utilities ----
   function qrUrl(data) {
     return `https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(data)}&format=png&color=1A1614&bgcolor=FBF8F2&margin=4`;
@@ -1010,42 +1171,54 @@
   function makePoster(idx) {
     const pals = genPalettes();
     const pal  = pals[idx];
-    const c    = parseContent(idx * 0xf1b3 + 1);
+    const c    = getContent(idx * 0xf1b3 + 1, idx);
     const qr   = qrUrl(state.website);
+    const e    = state.edits;
+    const sel  = idx === state.selected;
+    const bg   = (sel && e.bgColor) ? e.bgColor : pal.bg;
+    const fg   = (sel && e.fgColor) ? e.fgColor : pal.fg;
+    const ac   = (sel && e.acColor) ? e.acColor : pal.ac;
+    const img  = (sel && e.imageUrl)
+      ? `<img class="poster-bg-img" src="${e.imageUrl}" style="opacity:${e.imageOpacity/100}" alt="">`
+      : '';
+    const li   = (sel && e.layout >= 0) ? e.layout : idx;
 
     // Layout A: Bold full-bleed color, large display headline
-    if (idx === 0) return `<div class="poster poster--a" style="background:${pal.bg};color:${pal.fg}">
+    if (li === 0) return `<div class="poster poster--a" style="background:${bg};color:${fg};position:relative">
+      ${img}
       <div class="eyebrow" style="opacity:0.8">${esc(c.eyebrow)}</div>
       <div class="head">${esc(c.head)}<br><em>this</em><br>${esc(c.weekword)}</div>
-      <div class="meta" style="border-top-color:${pal.fg}55">
+      <div class="meta" style="border-top-color:${fg}55">
         <span>${esc(c.sub) || esc(c.closing)}</span>
-        <div class="qr-corner" style="background:${pal.fg}"><img src="${qr}" alt="QR"/></div>
-        <span class="brand-stamp" style="color:${pal.fg}">${esc(state.businessName.split(' ')[0])}</span>
+        <div class="qr-corner" style="background:${fg}"><img src="${qr}" alt="QR"/></div>
+        <span class="brand-stamp" style="color:${fg}">${esc(state.businessName.split(' ')[0])}</span>
       </div>
     </div>`;
 
     // Layout B: Split panel light/dark
-    if (idx === 1) return `<div class="poster poster--b" style="background:${pal.bg}">
-      <div class="top" style="background:${pal.fg};color:${pal.bg}">
-        <div class="label" style="color:${pal.ac}">${esc(state.businessName)}</div>
+    if (li === 1) return `<div class="poster poster--b" style="background:${bg};position:relative">
+      ${img}
+      <div class="top" style="background:${fg};color:${bg}">
+        <div class="label" style="color:${ac}">${esc(state.businessName)}</div>
         <div class="top-head">${esc(c.head)}.</div>
       </div>
       <div class="bot">
-        <div class="bot-head" style="color:${pal.ac}"><em>${esc(c.phrase)}</em></div>
-        <div class="bot-meta" style="color:${pal.fg}80">
+        <div class="bot-head" style="color:${ac}"><em>${esc(c.phrase)}</em></div>
+        <div class="bot-meta" style="color:${fg}80">
           <span>${esc(c.sub) || esc(c.closing)}</span>
-          <div class="qr-corner" style="background:${pal.fg}25"><img src="${qr}" alt="QR" style="filter:brightness(10)"/></div>
+          <div class="qr-corner" style="background:${fg}25"><img src="${qr}" alt="QR" style="filter:brightness(10)"/></div>
         </div>
       </div>
     </div>`;
 
     // Layout C: Geometric with ribbon tag
-    return `<div class="poster poster--c" style="background:${pal.bg};color:${pal.fg}">
-      <div class="ribbon" style="background:${pal.fg};color:${pal.bg}">${esc(c.ribbon)}</div>
-      <div class="head-c" style="color:${pal.fg}">${esc(c.head)} <em style="color:${pal.ac}">${esc(c.hereword)}</em></div>
-      <div class="meta-c" style="border-top-color:${pal.fg}55;color:${pal.fg}99">
+    return `<div class="poster poster--c" style="background:${bg};color:${fg};position:relative">
+      ${img}
+      <div class="ribbon" style="background:${fg};color:${bg}">${esc(c.ribbon)}</div>
+      <div class="head-c" style="color:${fg}">${esc(c.head)} <em style="color:${ac}">${esc(c.hereword)}</em></div>
+      <div class="meta-c" style="border-top-color:${fg}55;color:${fg}99">
         ${esc(c.sub) || esc(c.closing)}
-        <div class="qr-corner" style="background:${pal.fg}"><img src="${qr}" alt="QR"/></div>
+        <div class="qr-corner" style="background:${fg}"><img src="${qr}" alt="QR"/></div>
       </div>
     </div>`;
   }
@@ -1079,15 +1252,20 @@
   function makeTent(idx) {
     const pals = genPalettes();
     const pal  = pals[idx];
-    const c    = parseContent(idx * 0xd5e1 + 3);
+    const c    = getContent(idx * 0xd5e1 + 3, idx);
     const qr   = qrUrl(state.website);
+    const e    = state.edits;
+    const sel  = idx === state.selected;
+    const bg   = (sel && e.bgColor) ? e.bgColor : pal.bg;
+    const fg   = (sel && e.fgColor) ? e.fgColor : pal.fg;
+    const ac   = (sel && e.acColor) ? e.acColor : pal.ac;
     return `<div class="tent-card" style="flex-direction:row">
-      <div class="tent-left" style="background:${pal.bg};color:${pal.fg}">
-        <div class="tent-label" style="color:${pal.ac}">${esc(state.businessName)}</div>
+      <div class="tent-left" style="background:${bg};color:${fg}">
+        <div class="tent-label" style="color:${ac}">${esc(state.businessName)}</div>
         <div class="tent-head">${esc(c.head)}</div>
         <div class="tent-sub">${esc(c.sub) || esc(c.closing)}</div>
       </div>
-      <div class="tent-right" style="background:${pal.ac}">
+      <div class="tent-right" style="background:${ac}">
         <div class="qr-wrap"><img src="${qr}" alt="QR Code"/></div>
         <div class="scan-text">Scan to visit</div>
       </div>
@@ -1097,13 +1275,18 @@
   function makeWindow(idx) {
     const pals = genPalettes();
     const pal  = pals[idx];
-    const c    = parseContent(idx * 0xb2f9 + 4);
+    const c    = getContent(idx * 0xb2f9 + 4, idx);
     const qr   = qrUrl(state.website);
-    return `<div class="window-sign" style="background:${pal.fg};border-color:${pal.bg};color:${pal.bg}">
+    const e    = state.edits;
+    const sel  = idx === state.selected;
+    const bg   = (sel && e.bgColor) ? e.bgColor : pal.bg;
+    const fg   = (sel && e.fgColor) ? e.fgColor : pal.fg;
+    const ac   = (sel && e.acColor) ? e.acColor : pal.ac;
+    return `<div class="window-sign" style="background:${fg};border-color:${bg};color:${bg}">
       <div class="ws-top">${esc(state.businessName)} &middot; ${esc(state.city) || 'Local'}</div>
-      <div class="ws-head" style="color:${pal.bg}">${esc(c.head)} <em style="color:${pal.ac}">${esc(c.hereword)}</em></div>
+      <div class="ws-head" style="color:${bg}">${esc(c.head)} <em style="color:${ac}">${esc(c.hereword)}</em></div>
       <div class="ws-bot">
-        <div class="ws-qr" style="background:${pal.fg}"><img src="${qr}" alt="QR Code"/></div>
+        <div class="ws-qr" style="background:${fg}"><img src="${qr}" alt="QR Code"/></div>
         <div class="ws-name">Scan to learn more</div>
       </div>
     </div>`;
@@ -1380,9 +1563,210 @@
   document.querySelectorAll('.edit-list button').forEach(btn => {
     btn.addEventListener('click', () => {
       const a = btn.dataset.edit;
-      if (a === 'regen') { runGeneration(); }
-      else { showToast(`${{ text: 'Text editor', layout: 'Layout tools' }[a]} - coming soon`); }
+      if (a === 'regen')   runGeneration();
+      else if (a === 'text')   openEditor('text');
+      else if (a === 'layout') openEditor('layout');
     });
+  });
+
+  // ---- Editor ----
+  function openEditor(tab) {
+    const c = parseContent(state.selected * 0xf1b3 + 1);
+    const e = state.edits;
+    document.getElementById('edit-head').value    = e.head    || c.head    || '';
+    document.getElementById('edit-sub').value     = e.sub     || c.sub     || '';
+    document.getElementById('edit-eyebrow').value = e.eyebrow || c.eyebrow || '';
+    document.getElementById('edit-ribbon').value  = e.ribbon  || c.ribbon  || '';
+
+    const pals = genPalettes();
+    const pal  = pals[state.selected];
+    setColorPicker('bg', e.bgColor || pal.bg);
+    setColorPicker('fg', e.fgColor || pal.fg);
+    setColorPicker('ac', e.acColor || pal.ac);
+
+    const previewRow = document.getElementById('img-preview-row');
+    if (e.imageUrl) {
+      previewRow.classList.add('show');
+      document.getElementById('img-filename').textContent = e._imageName || 'image';
+    } else {
+      previewRow.classList.remove('show');
+    }
+    document.getElementById('img-opacity').value = e.imageOpacity;
+    document.getElementById('opacity-val').textContent = e.imageOpacity;
+
+    buildThemeDots(pal);
+    buildLayoutGrid();
+    switchEditorTab(tab || 'text');
+
+    document.getElementById('page-results').hidden = true;
+    document.getElementById('page-edit').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    updateEditorPreview();
+  }
+
+  function closeEditor() {
+    document.getElementById('page-edit').hidden = true;
+    document.getElementById('page-results').hidden = false;
+    renderPreview();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function switchEditorTab(name) {
+    document.querySelectorAll('.editor-tab').forEach(t => t.classList.toggle('active', t.dataset.etab === name));
+    ['text','layout','colors','image'].forEach(id => {
+      document.getElementById('etab-' + id).hidden = id !== name;
+    });
+  }
+
+  function setColorPicker(key, hex) {
+    document.getElementById('color-' + key).value = hex;
+    document.getElementById('hex-' + key).value   = hex;
+  }
+
+  function buildThemeDots(currentPal) {
+    const container = document.getElementById('theme-dots');
+    container.innerHTML = '';
+    PALETTES.forEach(pal => {
+      const dot = document.createElement('button');
+      dot.className = 'theme-dot';
+      dot.title = pal.bg;
+      dot.innerHTML = `<div class="theme-dot-main" style="background:${pal.bg}"></div><div class="theme-dot-acc" style="background:${pal.ac}"></div>`;
+      if (pal.bg === (state.edits.bgColor || currentPal.bg)) dot.classList.add('selected');
+      dot.addEventListener('click', () => {
+        state.edits.bgColor = pal.bg;
+        state.edits.fgColor = pal.fg;
+        state.edits.acColor = pal.ac;
+        setColorPicker('bg', pal.bg);
+        setColorPicker('fg', pal.fg);
+        setColorPicker('ac', pal.ac);
+        container.querySelectorAll('.theme-dot').forEach(d => d.classList.remove('selected'));
+        dot.classList.add('selected');
+        updateEditorPreview();
+      });
+      container.appendChild(dot);
+    });
+  }
+
+  function buildLayoutGrid() {
+    const grid = document.getElementById('layout-grid');
+    grid.innerHTML = '';
+    const labels = ['Bold A', 'Split B', 'Ribbon C'];
+    [0, 1, 2].forEach(li => {
+      const btn = document.createElement('button');
+      const isSelected = state.edits.layout === li || (state.edits.layout === -1 && li === state.selected);
+      btn.className = 'layout-opt' + (isSelected ? ' selected' : '');
+      const savedLayout = state.edits.layout;
+      state.edits.layout = li;
+      const miniHtml = makePoster(state.selected);
+      state.edits.layout = savedLayout;
+      btn.innerHTML = `<div class="poster-mini">${miniHtml}</div><span class="layout-opt-label">${labels[li]}</span>`;
+      btn.addEventListener('click', () => {
+        state.edits.layout = li;
+        grid.querySelectorAll('.layout-opt').forEach(b => b.classList.remove('selected'));
+        btn.classList.add('selected');
+        updateEditorPreview();
+      });
+      grid.appendChild(btn);
+    });
+  }
+
+  function updateEditorPreview() {
+    document.getElementById('editor-preview-stage').innerHTML = makePoster(state.selected);
+  }
+
+  // Color picker sync: swatch <-> hex input
+  ['bg','fg','ac'].forEach(key => {
+    const swatch = document.getElementById('color-' + key);
+    const hex    = document.getElementById('hex-' + key);
+    swatch.addEventListener('input', () => {
+      hex.value = swatch.value;
+      state.edits[key + 'Color'] = swatch.value;
+      updateEditorPreview();
+    });
+    hex.addEventListener('change', () => {
+      const v = hex.value.trim();
+      if (/^#[0-9a-fA-F]{6}$/.test(v)) {
+        swatch.value = v;
+        state.edits[key + 'Color'] = v;
+        updateEditorPreview();
+      }
+    });
+  });
+
+  // Text fields live update
+  ['head','sub','eyebrow','ribbon'].forEach(field => {
+    document.getElementById('edit-' + field).addEventListener('input', ev => {
+      state.edits[field] = ev.target.value;
+      updateEditorPreview();
+    });
+  });
+
+  // Image upload via FileReader
+  const imageUpload   = document.getElementById('image-upload');
+  const imageDropZone = document.getElementById('image-drop-zone');
+  imageDropZone.addEventListener('click', () => imageUpload.click());
+  imageDropZone.addEventListener('dragover', e => { e.preventDefault(); imageDropZone.classList.add('dragover'); });
+  imageDropZone.addEventListener('dragleave', () => imageDropZone.classList.remove('dragover'));
+  imageDropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    imageDropZone.classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) loadImageFile(file);
+  });
+  imageUpload.addEventListener('change', () => {
+    if (imageUpload.files[0]) loadImageFile(imageUpload.files[0]);
+  });
+
+  function loadImageFile(file) {
+    const reader = new FileReader();
+    reader.onload = ev => {
+      state.edits.imageUrl   = ev.target.result;
+      state.edits._imageName = file.name;
+      const row = document.getElementById('img-preview-row');
+      row.classList.add('show');
+      document.getElementById('img-filename').textContent = file.name;
+      updateEditorPreview();
+    };
+    reader.readAsDataURL(file);
+  }
+
+  document.getElementById('remove-img-btn').addEventListener('click', () => {
+    state.edits.imageUrl = '';
+    state.edits._imageName = '';
+    document.getElementById('img-preview-row').classList.remove('show');
+    imageUpload.value = '';
+    updateEditorPreview();
+  });
+
+  document.getElementById('img-opacity').addEventListener('input', ev => {
+    state.edits.imageOpacity = Number(ev.target.value);
+    document.getElementById('opacity-val').textContent = ev.target.value;
+    updateEditorPreview();
+  });
+
+  document.getElementById('reset-colors-btn').addEventListener('click', () => {
+    state.edits.bgColor = '';
+    state.edits.fgColor = '';
+    state.edits.acColor = '';
+    const pals = genPalettes();
+    const pal  = pals[state.selected];
+    setColorPicker('bg', pal.bg);
+    setColorPicker('fg', pal.fg);
+    setColorPicker('ac', pal.ac);
+    buildThemeDots(pal);
+    updateEditorPreview();
+  });
+
+  document.getElementById('editor-tabs').addEventListener('click', e => {
+    const tab = e.target.closest('.editor-tab');
+    if (!tab) return;
+    switchEditorTab(tab.dataset.etab);
+  });
+
+  document.getElementById('editor-back-btn').addEventListener('click', closeEditor);
+  document.getElementById('editor-apply-btn').addEventListener('click', () => {
+    closeEditor();
+    showToast('Changes applied to your design.');
   });
 
   // ---- Toast ----

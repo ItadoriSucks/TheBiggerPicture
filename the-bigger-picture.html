@@ -1926,7 +1926,7 @@
     const e0 = (id,t,x,y,w,h,o) => ({id,type:t,x,y,w,h,...o});
     return ({
       0: [
-        e0('bg','block',0,0,400,500,{bg:pal.bg}),
+        e0('bg','block',0,0,400,500,{bg:pal.bg,zidx:3}),
         e0('eyebrow','text',38,44,220,28,{text:c.eyebrow,fs:11,ff:"'Manrope',sans-serif",fw:'500',color:pal.fg,tt:'uppercase',ls:'0.2em',op:0.8}),
         e0('head','text',38,76,324,210,{text:c.head+'\nthis\n'+c.weekword,fs:58,ff:"'Fraunces',serif",fw:'400',color:pal.fg,lh:0.95,ls:'-0.03em'}),
         e0('divider','block',38,356,324,1,{bg:pal.fg+'88'}),
@@ -1934,6 +1934,7 @@
         e0('brand','text',284,370,78,60,{text:state.businessName.split(' ')[0],fs:16,ff:"'Fraunces',serif",color:pal.fg}),
       ],
       1: [
+        e0('bg','block',0,0,400,500,{bg:pal.bg,zidx:3}),
         e0('top','block',0,0,400,252,{bg:pal.fg}),
         e0('label','text',32,32,240,22,{text:state.businessName,fs:11,ff:"'Manrope',sans-serif",fw:'600',color:pal.ac,tt:'uppercase',ls:'0.12em'}),
         e0('head','text',32,58,336,172,{text:c.head+'.',fs:52,ff:"'Fraunces',serif",fw:'400',color:pal.bg,lh:0.98,ls:'-0.03em'}),
@@ -1941,6 +1942,7 @@
         e0('sub','text',32,400,300,48,{text:c.sub||c.closing,fs:12,ff:"'Manrope',sans-serif",color:pal.fg,op:0.5}),
       ],
       2: [
+        e0('bg','block',0,0,400,500,{bg:pal.bg,zidx:3}),
         e0('ribbon','block',0,0,400,44,{bg:pal.fg}),
         e0('rib-txt','text',38,11,200,22,{text:c.ribbon,fs:11,ff:"'Manrope',sans-serif",fw:'600',color:pal.bg,tt:'uppercase',ls:'0.12em'}),
         e0('head','text',38,68,324,218,{text:c.head,fs:64,ff:"'Fraunces',serif",fw:'400',color:pal.fg,lh:0.95,ls:'-0.03em'}),
@@ -1970,10 +1972,8 @@
       board.addEventListener('mousedown', onBoardBg);
     }
 
-    // Remove board elements, image overlay, and canvas
+    // Remove all board elements and canvas
     board.querySelectorAll('.board-el').forEach(el => el.remove());
-    const _oldOvr = board.querySelector('#board-img-overlay');
-    if (_oldOvr) _oldOvr.remove();
     if (board.contains(_cvs)) board.removeChild(_cvs);
     boardEls = []; boardSel = null;
 
@@ -1983,26 +1983,28 @@
     const li   = (e.layout >= 0) ? e.layout : state.selected;
     const c    = getContent(state.selected * 0xf1b3 + 1, state.selected);
 
-    board.style.background      = opal.bg;
+    // Board base is always white — the 'bg' block element provides the palette color
+    board.style.background      = 'white';
     board.style.backgroundImage = 'none';
 
-    // Non-interactive image overlay (respects opacity, sits below board elements)
-    if (e.imageUrl) {
-      const imgOvr = document.createElement('div');
-      imgOvr.id = 'board-img-overlay';
-      imgOvr.style.cssText =
-        `position:absolute;inset:0;z-index:2;pointer-events:none;` +
-        `background:url('${e.imageUrl}') center/cover no-repeat;` +
-        `opacity:${(e.imageOpacity ?? 40) / 100};`;
-      board.appendChild(imgOvr);
-    }
-
-    // Build elements
+    // Build layout elements
     getLayoutElements(li, c, opal).forEach(cfg => {
       const el = createBoardEl(cfg);
       board.appendChild(el);
       boardEls.push({ id: cfg.id, el, cfg });
     });
+
+    // Image as a draggable board element (placed above bg, below text)
+    if (e.imageUrl) {
+      const imgCfg = {
+        id: 'img-upload', type: 'image',
+        x: 0, y: 0, w: BOARD_W, h: BOARD_H,
+        src: e.imageUrl, op: (e.imageOpacity ?? 40) / 100, zidx: 4,
+      };
+      const imgEl = createBoardEl(imgCfg);
+      board.appendChild(imgEl);
+      boardEls.push({ id: 'img-upload', el: imgEl, cfg: imgCfg });
+    }
 
     // Restore positions
     boardEls.forEach(({ id, el }) => {
@@ -2027,9 +2029,16 @@
   }
 
   function onBoardBg(e) {
+    if (ds.tool === 'text') {
+      // Text mode: create on any click (board bg or bg/image element)
+      // Skip only if clicking inside an already-editing contenteditable
+      if (e.target.closest('[contenteditable="true"]')) return;
+      e.preventDefault();
+      startTextCreate(e);
+      return;
+    }
     if (e.target.closest('.board-el')) return;
     if (ds.tool === 'select') selectBoardEl(null);
-    if (ds.tool === 'text')   { e.preventDefault(); startTextCreate(e); }
   }
 
   function createBoardEl(cfg) {
@@ -2052,6 +2061,15 @@
     if (cfg.tt)    s.push(`text-transform:${cfg.tt}`);
     if (cfg.op !== undefined) s.push(`opacity:${cfg.op}`);
     el.style.cssText = s.join(';');
+    if (cfg.zidx !== undefined) el.style.zIndex = cfg.zidx;
+
+    if (cfg.type === 'image') {
+      const img = document.createElement('img');
+      img.src = cfg.src || '';
+      img.draggable = false;
+      img.style.cssText = 'width:100%;height:100%;object-fit:cover;display:block;pointer-events:none;user-select:none;border-radius:inherit;';
+      el.appendChild(img);
+    }
 
     if (cfg.type === 'text') {
       const inner = document.createElement('div');
@@ -2137,13 +2155,12 @@
 
   function startBoardDrag(e, el) {
     const startX = e.clientX, startY = e.clientY;
-    const origL  = parseFloat(el.style.left)   || 0;
-    const origT  = parseFloat(el.style.top)    || 0;
-    const w      = parseFloat(el.style.width)  || 60;
-    const h      = parseFloat(el.style.height) || 20;
+    const origL  = parseFloat(el.style.left) || 0;
+    const origT  = parseFloat(el.style.top)  || 0;
     function move(ev) {
-      el.style.left = Math.max(0, Math.min(BOARD_W - w, origL + ev.clientX - startX)) + 'px';
-      el.style.top  = Math.max(0, Math.min(BOARD_H - h, origT + ev.clientY - startY)) + 'px';
+      // No clamping — elements can be moved off-board (board overflow:hidden clips them)
+      el.style.left = (origL + ev.clientX - startX) + 'px';
+      el.style.top  = (origT + ev.clientY - startY) + 'px';
     }
     function up() { document.removeEventListener('mousemove', move); document.removeEventListener('mouseup', up); }
     document.addEventListener('mousemove', move);
@@ -2552,9 +2569,9 @@
   document.getElementById('img-opacity').addEventListener('input', ev => {
     state.edits.imageOpacity = Number(ev.target.value);
     document.getElementById('opacity-val').textContent = ev.target.value;
-    // Update overlay directly — no need to rebuild the whole board
-    const ovr = document.getElementById('board-img-overlay');
-    if (ovr) ovr.style.opacity = ev.target.value / 100;
+    // Update the image board element directly without rebuilding
+    const imgEntry = boardEls.find(b => b.id === 'img-upload');
+    if (imgEntry) imgEntry.el.style.opacity = ev.target.value / 100;
   });
 
   document.getElementById('reset-colors-btn').addEventListener('click', () => {

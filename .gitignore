@@ -1,0 +1,17 @@
+# Dependencies
+node_modules/
+
+# Runtime data — SQLite DB (+ WAL/SHM) and uploaded images.
+# Contains user accounts and password hashes; never commit.
+server/data/
+
+# Secrets / local environment (e.g. ANTHROPIC_API_KEY for the website feature)
+.env
+server/.env
+
+# Claude Code local, machine-specific settings (keep launch.json shared)
+.claude/settings.local.json
+
+# Misc
+npm-debug.log*
+.DS_Store

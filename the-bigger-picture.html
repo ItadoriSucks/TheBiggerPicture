@@ -741,8 +741,15 @@
 
   <div class="topbar-right">
     <button class="demo-btn" id="feedback-nav-btn" style="background:var(--bg-elevated);color:var(--ink-soft);border-color:var(--rule-strong)">Feedback</button>
+    <button class="demo-btn" id="mypage-nav-btn" hidden>My Page</button>
     <button class="demo-btn" id="demo-mode-btn">⚡ Demo Mode</button>
-    <div class="credits-pill"><strong>Full</strong> Access</div>
+    <button class="demo-btn" id="auth-login-btn">Log in</button>
+    <button class="demo-btn acct-cta" id="auth-signup-btn">Sign up</button>
+    <div class="acct-chip" id="acct-chip" hidden>
+      <div class="acct-avatar" id="acct-avatar">B</div>
+      <span class="acct-name" id="acct-name">Account</span>
+      <button class="acct-logout" id="auth-logout-btn" title="Log out">&#x23FB;</button>
+    </div>
   </div>
 </header>
 
@@ -757,6 +764,21 @@
     <input class="gate-input" id="gate-biz" type="text" placeholder="Business name (optional)"/>
     <button class="gate-submit" id="gate-submit">Request Free Trial →</button>
     <p class="gate-note">We review every signup — <strong>usually approved same day.</strong> No credit card needed.</p>
+  </div>
+</div>
+
+<!-- ===== AUTH MODAL ===== -->
+<div class="gate-overlay" id="auth-overlay" hidden>
+  <div class="gate-card" style="max-width:420px;position:relative">
+    <button id="auth-close" aria-label="Close" style="position:absolute;top:16px;right:18px;background:none;border:none;font-size:22px;color:var(--ink-soft);cursor:pointer">&times;</button>
+    <div class="badge" id="auth-badge">Welcome</div>
+    <h2 class="display" id="auth-title">Create your<br>account.</h2>
+    <p id="auth-sub">Save your designs, your Business DNA, and pick up right where you left off.</p>
+    <input class="gate-input" id="auth-name" type="text" placeholder="Display name" autocomplete="name">
+    <input class="gate-input" id="auth-email" type="email" placeholder="Email address" autocomplete="email">
+    <input class="gate-input" id="auth-password" type="password" placeholder="Password (8+ characters)" autocomplete="new-password">
+    <button class="gate-submit" id="auth-submit">Create account &rarr;</button>
+    <p class="gate-note" id="auth-toggle-note">Already have an account? <a href="#" id="auth-toggle">Log in</a></p>
   </div>
 </div>
 
@@ -1109,6 +1131,11 @@
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 2V10M7 10L4 7M7 10L10 7M2 12.5H12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </button>
 
+      <button class="download-btn" id="save-design-btn" style="background:var(--bg-elevated);color:var(--ink);border:1px solid var(--rule-strong);margin-top:10px">
+        Save to My Page
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M3 2h6l2 2v8H3z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><path d="M5 2v3h3" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+
       <button class="post-btn" id="post-btn">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
         Post to Instagram
@@ -1268,7 +1295,7 @@
 <div class="page" id="page-feedback" hidden>
   <button class="back-link" id="feedback-back-btn">← Back</button>
   <h2 class="editor-title display" style="margin-bottom:8px">Community <em>Feedback.</em></h2>
-  <p style="color:var(--ink-soft);margin-bottom:36px;font-size:15px">Share thoughts, ideas, or bugs. Comments are saved in your browser.</p>
+  <p style="color:var(--ink-soft);margin-bottom:36px;font-size:15px">Share thoughts, ideas, or bugs. Sign in to post — your comment is saved to your account.</p>
   <div class="fb-thread">
     <div class="fb-thread-header">
       <span class="fb-thread-name">&#x1F4AC; Feedback</span>
@@ -1277,13 +1304,65 @@
     <div id="fb-list"></div>
     <div class="fb-form">
       <h4>Leave a comment</h4>
-      <input class="fb-input" id="fb-name" type="text" placeholder="Your name" maxlength="50" autocomplete="name">
-      <textarea class="fb-textarea" id="fb-text" placeholder="Share your feedback or ideas&#x2026;" maxlength="500"></textarea>
-      <div class="fb-form-footer">
-        <span class="fb-charcount" id="fb-charcount">500 characters left</span>
-        <button class="fb-submit" id="fb-submit">Post comment</button>
+      <div id="fb-login-prompt" class="fb-empty" style="margin:0;text-align:left">
+        Please <a href="#" id="fb-login-link" style="color:var(--accent);font-weight:600">log in</a> to post a comment.
+      </div>
+      <div id="fb-compose" hidden>
+        <textarea class="fb-textarea" id="fb-text" placeholder="Share your feedback or ideas&#x2026;" maxlength="2000"></textarea>
+        <div class="fb-form-footer">
+          <span class="fb-charcount" id="fb-charcount">2000 characters left</span>
+          <button class="fb-submit" id="fb-submit">Post comment</button>
+        </div>
       </div>
     </div>
+  </div>
+</div>
+
+<!-- ===== MY PAGE ===== -->
+<div class="page" id="page-account" hidden>
+  <button class="back-link" id="account-back-btn">&larr; Back</button>
+  <div class="account-toprow">
+    <div class="account-identity">
+      <div class="account-avatar" id="account-avatar">B</div>
+      <div>
+        <h2 class="editor-title display" id="account-name-display" style="margin:0">My Page</h2>
+        <p id="account-email" style="color:var(--ink-soft);font-size:14px;margin:4px 0 0"></p>
+      </div>
+    </div>
+    <button class="demo-btn" id="account-edit-toggle">Edit profile</button>
+  </div>
+
+  <div class="account-profile-edit" id="account-profile-edit" hidden>
+    <div class="account-avatar-edit">
+      <div class="account-avatar" id="account-avatar-preview">B</div>
+      <button class="demo-btn" id="account-avatar-btn">Change photo</button>
+      <input type="file" id="account-avatar-file" accept="image/*" hidden>
+    </div>
+    <label class="af-label">Display name</label>
+    <input class="gate-input" id="account-name-input" type="text" placeholder="Your name" style="margin:6px 0 14px">
+    <div style="display:flex;gap:10px">
+      <button class="fb-submit" id="account-save-btn">Save profile</button>
+      <button class="demo-btn" id="account-cancel-btn">Cancel</button>
+    </div>
+  </div>
+
+  <div class="account-body">
+    <aside class="account-folders">
+      <div class="account-folders-head">
+        <span>Collections</span>
+        <button id="folder-add-btn" title="New collection">+</button>
+      </div>
+      <button class="folder-item selected" data-folder="all" id="folder-all">All designs</button>
+      <div id="folder-list"></div>
+    </aside>
+    <section class="account-designs">
+      <div class="account-designs-head">
+        <span id="designs-count">0 designs</span>
+        <span id="designs-hint" style="color:var(--ink-soft);font-size:13px">Drag to reorder</span>
+      </div>
+      <div id="designs-grid" class="designs-grid"></div>
+      <div id="designs-empty" class="fb-empty">No saved designs yet. Generate a piece, then hit &ldquo;Save to My Page&rdquo;.</div>
+    </section>
   </div>
 </div>
 
@@ -1298,6 +1377,51 @@
 </div>
 
 <div class="toast" id="toast"></div>
+
+<style>
+  /* ---- Account / auth UI ---- */
+  .acct-cta { background: var(--ink); color: #fff; }
+  .acct-chip { display:flex; align-items:center; gap:8px; padding:4px 6px 4px 4px; border:1px solid var(--rule-strong); border-radius:999px; }
+  .acct-avatar { width:28px; height:28px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:13px; overflow:hidden; flex:none; }
+  .acct-avatar img { width:100%; height:100%; object-fit:cover; }
+  .acct-name { font-size:13px; font-weight:600; max-width:120px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .acct-logout { background:none; border:none; cursor:pointer; color:var(--ink-soft); font-size:15px; padding:2px 4px; }
+  .acct-logout:hover { color:var(--accent); }
+
+  /* ---- My Page ---- */
+  #page-account { max-width: 1080px; margin: 0 auto; padding: 40px 32px 80px; }
+  .account-toprow { display:flex; align-items:center; justify-content:space-between; gap:16px; margin:18px 0 28px; }
+  .account-identity { display:flex; align-items:center; gap:16px; }
+  .account-identity .account-avatar, #account-avatar-preview { width:64px; height:64px; font-size:26px; }
+  .account-avatar { width:64px; height:64px; border-radius:50%; background:var(--accent); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; overflow:hidden; }
+  .account-avatar img { width:100%; height:100%; object-fit:cover; }
+  .account-profile-edit { background:var(--bg-elevated); border:1px solid var(--rule); border-radius:14px; padding:22px; margin-bottom:28px; max-width:420px; }
+  .account-avatar-edit { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+  .account-body { display:grid; grid-template-columns: 220px 1fr; gap:28px; align-items:start; }
+  .account-folders { border:1px solid var(--rule); border-radius:14px; padding:14px; }
+  .account-folders-head { display:flex; align-items:center; justify-content:space-between; font-weight:700; font-size:13px; text-transform:uppercase; letter-spacing:.04em; color:var(--ink-soft); margin-bottom:10px; }
+  .account-folders-head button { width:24px; height:24px; border-radius:6px; border:1px solid var(--rule-strong); background:none; cursor:pointer; font-size:16px; line-height:1; color:var(--ink); }
+  .folder-item { display:flex; align-items:center; justify-content:space-between; width:100%; text-align:left; background:none; border:none; padding:9px 10px; border-radius:8px; cursor:pointer; font-size:14px; color:var(--ink); }
+  .folder-item:hover { background:var(--bg-elevated); }
+  .folder-item.selected { background:var(--ink); color:#fff; }
+  .folder-item .folder-del { opacity:0; background:none; border:none; color:inherit; cursor:pointer; font-size:13px; }
+  .folder-item:hover .folder-del { opacity:.7; }
+  .folder-item.drop-target { outline:2px dashed var(--accent); outline-offset:1px; }
+  .account-designs-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; font-weight:600; }
+  .designs-grid { display:grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap:18px; }
+  .design-card { border:1px solid var(--rule); border-radius:12px; overflow:hidden; background:var(--bg-elevated); transition:transform .12s, box-shadow .12s; }
+  .design-card:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(0,0,0,.10); }
+  .design-card.dragging { opacity:.5; }
+  .design-card.drop-target { outline:2px dashed var(--accent); outline-offset:2px; }
+  .design-thumb { width:100%; aspect-ratio:4/5; object-fit:cover; display:block; background:#fff; cursor:grab; }
+  .design-meta { padding:10px 12px; }
+  .design-title { font-size:13px; font-weight:600; border:1px solid transparent; background:none; width:100%; padding:2px 4px; margin:-2px -4px; color:var(--ink); border-radius:4px; }
+  .design-title:focus { border-color:var(--rule-strong); outline:none; background:var(--paper,#fff); }
+  .design-actions { display:flex; gap:8px; margin-top:8px; }
+  .design-actions button { font-size:12px; background:none; border:1px solid var(--rule-strong); border-radius:6px; padding:4px 8px; cursor:pointer; color:var(--ink-soft); }
+  .design-actions button:hover { color:var(--accent); border-color:var(--accent); }
+  @media (max-width:720px){ .account-body{ grid-template-columns:1fr; } }
+</style>
 
 <script>
   // ---- State ----
@@ -2643,6 +2767,7 @@
         setBrandColor('primary', pal.bg);
         setBrandColor('accent', pal.ac);
         syncBrandPresetHighlight();
+        scheduleBrandSave();
       });
       container.appendChild(dot);
     });
@@ -2696,7 +2821,7 @@
     document.body.style.overflow = '';
   }
 
-  function saveBrand() {
+  async function saveBrand() {
     const b = state.brand;
     b.name     = document.getElementById('brand-name-input').value.trim() || b.name;
     b.location = document.getElementById('brand-location-input').value.trim();
@@ -2704,7 +2829,14 @@
     if (b.location) state.city = b.location;
     updateBrandCard();
     closeBrandModal();
-    showToast('Brand saved.');
+    if (!currentUser) {
+      _brandDirty = true;
+      showToast('Saved on this device — sign in to keep it on your account');
+      openAuth('signup');
+      return;
+    }
+    const ok = await persistDNA();
+    showToast(ok ? 'Brand saved.' : 'Couldn’t save your brand — please try again');
   }
 
   function updateBrandCard() {
@@ -2729,6 +2861,20 @@
       document.querySelectorAll('.brand-voice-opt').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
       state.brand.voice = btn.dataset.voice;
+      scheduleBrandSave();
+    });
+  });
+
+  // Live-save the company name / location as they change (in addition to "Save brand")
+  ['brand-name-input', 'brand-location-input'].forEach(id => {
+    document.getElementById(id).addEventListener('change', () => {
+      const b = state.brand;
+      b.name     = document.getElementById('brand-name-input').value.trim() || b.name;
+      b.location = document.getElementById('brand-location-input').value.trim();
+      state.businessName = b.name;
+      if (b.location) state.city = b.location;
+      updateBrandCard();
+      scheduleBrandSave();
     });
   });
 
@@ -2741,6 +2887,7 @@
       if (key === 'primary') state.brand.primaryColor = swatch.value;
       else state.brand.accentColor = swatch.value;
       syncBrandPresetHighlight();
+      scheduleBrandSave();
     });
     hex.addEventListener('change', () => {
       const v = hex.value.trim();
@@ -2749,6 +2896,7 @@
         if (key === 'primary') state.brand.primaryColor = v;
         else state.brand.accentColor = v;
         syncBrandPresetHighlight();
+        scheduleBrandSave();
       }
     });
   });
@@ -2768,6 +2916,7 @@
       document.getElementById('brand-logo-preview-name').textContent    = file.name;
       document.getElementById('brand-logo-preview-wrap').hidden         = false;
       document.getElementById('brand-logo-drop').style.display          = 'none';
+      scheduleBrandSave();
     };
     reader.readAsDataURL(file);
   }
@@ -2778,6 +2927,7 @@
     brandLogoUpload.value = '';
     document.getElementById('brand-logo-preview-wrap').hidden  = true;
     document.getElementById('brand-logo-drop').style.display   = '';
+    scheduleBrandSave();
   });
 
   // Close on backdrop click
@@ -2801,16 +2951,549 @@
 
   document.getElementById('city-select').dispatchEvent(new Event('change'));
 
-  // ---- Feedback Page ----
-  const FB_KEY = 'tbp_feedback';
-  const FB_USER_KEY = 'tbp_fb_user';
+  // =====================================================================
+  //  BACKEND INTEGRATION (accounts, Business DNA, My Page, drafts, comments)
+  //  All calls are same-origin to the local Express server on this host.
+  // =====================================================================
 
-  function fbLoadComments() {
-    try { return JSON.parse(localStorage.getItem(FB_KEY)) || []; } catch { return []; }
+  async function api(path, opts = {}) {
+    const res = await fetch(path, {
+      credentials: 'same-origin',
+      headers: opts.body ? { 'Content-Type': 'application/json' } : {},
+      ...opts,
+    });
+    let data = null;
+    try { data = await res.json(); } catch (_) {}
+    if (!res.ok) throw new Error((data && data.error) || ('Request failed (' + res.status + ')'));
+    return data;
   }
-  function fbSaveComments(c) { localStorage.setItem(FB_KEY, JSON.stringify(c)); }
-  function fbSavedUser()     { return localStorage.getItem(FB_USER_KEY) || ''; }
 
+  let currentUser = null;
+  let myDesigns   = [];
+  let myFolders   = [];
+  let activeFolder = 'all';
+
+  function initials(name) {
+    const n = String(name || '').trim();
+    if (!n) return 'B';
+    const parts = n.split(/\s+/);
+    return ((parts[0][0] || '') + (parts[1] ? parts[1][0] : '')).toUpperCase();
+  }
+
+  // ---- Auth modal ----
+  let authMode = 'signup';
+  function bindAuthToggle() {
+    const t = document.getElementById('auth-toggle');
+    if (t) t.onclick = (e) => { e.preventDefault(); openAuth(authMode === 'signup' ? 'login' : 'signup'); };
+  }
+  function openAuth(mode) {
+    authMode = mode || 'signup';
+    const isSignup = authMode === 'signup';
+    document.getElementById('auth-badge').textContent = isSignup ? 'Welcome' : 'Welcome back';
+    document.getElementById('auth-title').innerHTML = isSignup ? 'Create your<br>account.' : 'Log in to<br>your account.';
+    document.getElementById('auth-sub').textContent = isSignup
+      ? 'Save your designs, your Business DNA, and pick up right where you left off.'
+      : 'Your designs and Business DNA are waiting.';
+    document.getElementById('auth-name').hidden = !isSignup;
+    document.getElementById('auth-password').setAttribute('autocomplete', isSignup ? 'new-password' : 'current-password');
+    document.getElementById('auth-submit').innerHTML = isSignup ? 'Create account &rarr;' : 'Log in &rarr;';
+    document.getElementById('auth-toggle-note').innerHTML = isSignup
+      ? 'Already have an account? <a href="#" id="auth-toggle">Log in</a>'
+      : 'Don’t have an account? <a href="#" id="auth-toggle">Sign up</a>';
+    bindAuthToggle();
+    document.getElementById('auth-overlay').hidden = false;
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => { const f = document.getElementById(isSignup ? 'auth-name' : 'auth-email'); if (f) f.focus(); }, 60);
+  }
+  function closeAuth() {
+    document.getElementById('auth-overlay').hidden = true;
+    document.body.style.overflow = '';
+  }
+
+  function refreshAuthUI() {
+    const on = !!currentUser;
+    document.getElementById('auth-login-btn').hidden  = on;
+    document.getElementById('auth-signup-btn').hidden = on;
+    document.getElementById('acct-chip').hidden       = !on;
+    document.getElementById('mypage-nav-btn').hidden  = !on;
+    if (on) {
+      document.getElementById('acct-name').textContent = currentUser.displayName || currentUser.email;
+      const av = document.getElementById('acct-avatar');
+      if (currentUser.avatarUrl) {
+        av.innerHTML = `<img src="${esc(currentUser.avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+      } else {
+        av.textContent = initials(currentUser.displayName || currentUser.email);
+      }
+    }
+    fbSyncCompose();
+  }
+
+  async function submitAuth() {
+    const email    = document.getElementById('auth-email').value.trim();
+    const password = document.getElementById('auth-password').value;
+    const name     = document.getElementById('auth-name').value.trim();
+    if (!email)    { showToast('Please enter your email'); return; }
+    if (!password) { showToast('Please enter a password'); return; }
+    const btn = document.getElementById('auth-submit');
+    const orig = btn.innerHTML; btn.disabled = true; btn.textContent = 'Please wait…';
+    try {
+      const ep = authMode === 'signup' ? '/api/auth/signup' : '/api/auth/login';
+      const payload = authMode === 'signup' ? { email, password, displayName: name } : { email, password };
+      const data = await api(ep, { method: 'POST', body: JSON.stringify(payload) });
+      currentUser = data.user;
+      closeAuth();
+      document.getElementById('auth-password').value = '';
+      refreshAuthUI();
+      await syncBrandOnLogin();
+      showToast(authMode === 'signup' ? 'Account created!' : 'Welcome back!');
+      await maybeRestoreDraft();
+      if (_pendingSaveDesign) { _pendingSaveDesign = false; saveCurrentDesign(); }
+    } catch (e) {
+      showToast(e.message || 'Something went wrong');
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig;
+    }
+  }
+
+  document.getElementById('auth-login-btn').addEventListener('click', () => openAuth('login'));
+  document.getElementById('auth-signup-btn').addEventListener('click', () => openAuth('signup'));
+  document.getElementById('auth-close').addEventListener('click', closeAuth);
+  document.getElementById('auth-overlay').addEventListener('click', e => { if (e.target.id === 'auth-overlay') closeAuth(); });
+  document.getElementById('auth-submit').addEventListener('click', submitAuth);
+  ['auth-name', 'auth-email', 'auth-password'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') submitAuth(); });
+  });
+  document.getElementById('auth-logout-btn').addEventListener('click', async () => {
+    try { await api('/api/auth/logout', { method: 'POST' }); } catch (_) {}
+    currentUser = null; myDesigns = []; myFolders = []; activeFolder = 'all'; hasGenerated = false;
+    _brandDirty = false; clearTimeout(_brandSaveTimer); _pendingSaveDesign = false;
+    state.brand = { name: 'Marigold & Co.', logoUrl: '', logoName: '', voice: 'warm', primaryColor: '#1A1614', accentColor: '#DD4B25', location: '' };
+    state.businessName = state.brand.name;
+    updateBrandCard();
+    refreshAuthUI();
+    document.querySelectorAll('.page').forEach(p => p.hidden = true);
+    document.getElementById('page-create').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    showToast('Logged out.');
+  });
+
+  // ---- Business DNA sync ----
+  let _brandDirty = false;        // local brand edits not yet persisted to the server
+  let _brandSaveTimer = null;
+
+  function applyDNAToBrand(dna) {
+    const b = state.brand;
+    if (dna.name)         b.name = dna.name;
+    b.logoUrl = dna.logoUrl || '';
+    if (!b.logoUrl) b.logoName = '';
+    if (dna.voice)        b.voice = dna.voice;
+    if (dna.primaryColor) b.primaryColor = dna.primaryColor;
+    if (dna.accentColor)  b.accentColor = dna.accentColor;
+    b.location = dna.location || '';
+    state.businessName = b.name;
+    if (b.location) state.city = b.location;
+    updateBrandCard();
+  }
+
+  async function loadDNA() {
+    try { const { dna } = await api('/api/dna'); if (dna) applyDNAToBrand(dna); } catch (_) {}
+  }
+
+  // Returns true only when the brand actually reached the server.
+  async function persistDNA({ silent = false, promptLogin = false } = {}) {
+    const b = state.brand;
+    if (!currentUser) {
+      _brandDirty = true;                       // keep the edits so login can sync them
+      if (promptLogin) { showToast('Sign in to save your brand to your account'); openAuth('signup'); }
+      return false;
+    }
+    try {
+      await api('/api/dna', { method: 'PUT', body: JSON.stringify({
+        name: b.name, logoUrl: b.logoUrl, voice: b.voice,
+        primaryColor: b.primaryColor, accentColor: b.accentColor, location: b.location,
+      }) });
+      _brandDirty = false;
+      return true;
+    } catch (e) {
+      if (!silent) showToast(e.message || 'Could not save your brand — please try again');
+      return false;
+    }
+  }
+
+  // Debounced background save whenever a brand field changes.
+  function scheduleBrandSave() {
+    if (!currentUser) { _brandDirty = true; return; }
+    clearTimeout(_brandSaveTimer);
+    _brandSaveTimer = setTimeout(() => persistDNA({ silent: true }), 1000);
+  }
+
+  // On login: a returning user's saved brand wins; a brand-new user who customized
+  // before signing up keeps those edits (pushed up), so nothing is silently lost.
+  async function syncBrandOnLogin() {
+    let dna = null;
+    try { dna = (await api('/api/dna')).dna; } catch (_) {}
+    if (dna) {
+      applyDNAToBrand(dna);
+      _brandDirty = false;
+    } else if (_brandDirty) {
+      const ok = await persistDNA({ silent: true });
+      if (ok) showToast('Your brand was saved to your account.');
+    }
+  }
+
+  // ---- My Page ----
+  function openAccount() {
+    if (!currentUser) { openAuth('login'); return; }
+    document.querySelectorAll('.page').forEach(p => p.hidden = true);
+    document.getElementById('page-account').hidden = false;
+    document.getElementById('account-name-display').textContent = currentUser.displayName || 'My Page';
+    document.getElementById('account-email').textContent = currentUser.email;
+    document.getElementById('account-profile-edit').hidden = true;
+    renderAccountAvatar();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    loadFoldersAndDesigns();
+  }
+  function renderAccountAvatar() {
+    const html = currentUser.avatarUrl
+      ? `<img src="${esc(currentUser.avatarUrl)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`
+      : null;
+    ['account-avatar', 'account-avatar-preview'].forEach(id => {
+      const el = document.getElementById(id); if (!el) return;
+      if (html) el.innerHTML = html; else el.textContent = initials(currentUser.displayName || currentUser.email);
+    });
+  }
+  async function loadFoldersAndDesigns() {
+    try {
+      const [f, d] = await Promise.all([api('/api/folders'), api('/api/designs')]);
+      myFolders = f.folders || [];
+      myDesigns = d.designs || [];
+    } catch (_) { myFolders = []; myDesigns = []; }
+    renderFolders();
+    renderDesigns();
+  }
+
+  function visibleDesigns() {
+    return activeFolder === 'all'
+      ? myDesigns.slice()
+      : myDesigns.filter(d => String(d.folderId) === String(activeFolder));
+  }
+
+  let _dragId = null;
+  function attachFolderDrop(el, fid) {
+    el.ondragover  = (e) => { if (_dragId) { e.preventDefault(); el.classList.add('drop-target'); } };
+    el.ondragleave = () => el.classList.remove('drop-target');
+    el.ondrop      = (e) => { e.preventDefault(); el.classList.remove('drop-target'); if (_dragId) moveDesignToFolder(_dragId, fid); };
+  }
+
+  function renderFolders() {
+    const list = document.getElementById('folder-list');
+    list.innerHTML = '';
+    myFolders.forEach(f => {
+      const count = myDesigns.filter(d => String(d.folderId) === String(f.id)).length;
+      const div = document.createElement('div');
+      div.className = 'folder-item' + (String(activeFolder) === String(f.id) ? ' selected' : '');
+      div.dataset.folder = f.id;
+      div.innerHTML = `<span>${esc(f.name)} <span style="opacity:.5;font-size:12px">${count}</span></span>` +
+                      `<span class="folder-del" title="Delete collection">&times;</span>`;
+      div.onclick = (e) => { if (e.target.classList.contains('folder-del')) return; activeFolder = String(f.id); renderFolders(); renderDesigns(); };
+      div.querySelector('.folder-del').onclick = (e) => { e.stopPropagation(); deleteFolder(f.id); };
+      attachFolderDrop(div, String(f.id));
+      list.appendChild(div);
+    });
+    const fAll = document.getElementById('folder-all');
+    fAll.classList.toggle('selected', activeFolder === 'all');
+    fAll.onclick = () => { activeFolder = 'all'; renderFolders(); renderDesigns(); };
+    attachFolderDrop(fAll, 'all');
+  }
+
+  function renderDesigns() {
+    const grid  = document.getElementById('designs-grid');
+    const empty = document.getElementById('designs-empty');
+    const vis   = visibleDesigns();
+    document.getElementById('designs-count').textContent = vis.length === 1 ? '1 design' : vis.length + ' designs';
+    grid.innerHTML = '';
+    if (!vis.length) { empty.hidden = false; return; }
+    empty.hidden = true;
+    vis.forEach(d => {
+      const card = document.createElement('div');
+      card.className = 'design-card';
+      card.draggable = true;
+      card.dataset.id = d.id;
+      card.innerHTML =
+        `<img class="design-thumb" src="${esc(d.imageUrl)}" alt="${esc(d.title)}" draggable="false">` +
+        `<div style="padding:10px">` +
+          `<input class="design-title" value="${esc(d.title)}" maxlength="200">` +
+          `<div class="design-actions">` +
+            `<button data-act="open">Open</button>` +
+            `<button data-act="delete">Delete</button>` +
+          `</div>` +
+        `</div>`;
+      grid.appendChild(card);
+    });
+    bindDesignEvents();
+  }
+
+  function bindDesignEvents() {
+    const grid = document.getElementById('designs-grid');
+    grid.querySelectorAll('.design-card').forEach(card => {
+      card.addEventListener('dragstart', e => {
+        _dragId = card.dataset.id; card.classList.add('dragging');
+        e.dataTransfer.effectAllowed = 'move';
+        try { e.dataTransfer.setData('text/plain', card.dataset.id); } catch (_) {}
+      });
+      card.addEventListener('dragend', () => {
+        card.classList.remove('dragging'); _dragId = null;
+        grid.querySelectorAll('.drop-target').forEach(c => c.classList.remove('drop-target'));
+      });
+      card.addEventListener('dragover', e => { if (_dragId) { e.preventDefault(); card.classList.add('drop-target'); } });
+      card.addEventListener('dragleave', () => card.classList.remove('drop-target'));
+      card.addEventListener('drop', e => {
+        e.preventDefault(); card.classList.remove('drop-target');
+        if (_dragId && _dragId !== card.dataset.id) applyReorder(_dragId, card.dataset.id);
+      });
+      card.querySelector('[data-act="open"]').addEventListener('click', () => openDesign(card.dataset.id));
+      card.querySelector('[data-act="delete"]').addEventListener('click', () => deleteDesign(card.dataset.id));
+      const title = card.querySelector('.design-title');
+      title.addEventListener('change', () => renameDesign(card.dataset.id, title.value));
+      title.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); title.blur(); } });
+    });
+  }
+
+  async function applyReorder(draggedId, targetId) {
+    const vis = visibleDesigns();
+    const from = vis.findIndex(d => String(d.id) === String(draggedId));
+    const to   = vis.findIndex(d => String(d.id) === String(targetId));
+    if (from < 0 || to < 0 || from === to) return;
+    const [moved] = vis.splice(from, 1);
+    vis.splice(to, 0, moved);
+    const visIds = new Set(vis.map(d => d.id));
+    let vi = 0;
+    myDesigns = myDesigns.map(d => visIds.has(d.id) ? vis[vi++] : d);
+    myDesigns.forEach((d, i) => { d.sortOrder = i; });
+    renderDesigns();
+    try {
+      await api('/api/designs/reorder', { method: 'PUT', body: JSON.stringify({ order: myDesigns.map(d => ({ id: d.id, sortOrder: d.sortOrder })) }) });
+    } catch (_) { showToast('Could not save order'); }
+  }
+
+  async function moveDesignToFolder(designId, folderId) {
+    const d = myDesigns.find(x => String(x.id) === String(designId));
+    if (!d) return;
+    const fid = folderId === 'all' ? null : Number(folderId);
+    if (String(d.folderId) === String(fid)) return;
+    d.folderId = fid;
+    renderFolders(); renderDesigns();
+    try { await api('/api/designs/' + designId, { method: 'PUT', body: JSON.stringify({ folderId: fid }) }); showToast('Moved.'); }
+    catch (_) { showToast('Move failed'); }
+  }
+
+  async function renameDesign(id, title) {
+    const t = String(title || '').trim() || 'Untitled';
+    const d = myDesigns.find(x => String(x.id) === String(id));
+    if (d) d.title = t;
+    try { await api('/api/designs/' + id, { method: 'PUT', body: JSON.stringify({ title: t }) }); }
+    catch (_) { showToast('Rename failed'); }
+  }
+
+  async function deleteDesign(id) {
+    if (!confirm('Delete this design? This cannot be undone.')) return;
+    try { await api('/api/designs/' + id, { method: 'DELETE' }); }
+    catch (_) { showToast('Delete failed'); return; }
+    myDesigns = myDesigns.filter(d => String(d.id) !== String(id));
+    renderFolders(); renderDesigns();
+    showToast('Design deleted.');
+  }
+
+  function openDesign(id) {
+    const d = myDesigns.find(x => String(x.id) === String(id));
+    if (!d) return;
+    let saved = {};
+    try { saved = JSON.parse(d.stateJson || '{}'); } catch (_) {}
+    restoreDesignState(saved);
+    document.querySelectorAll('.page').forEach(p => p.hidden = true);
+    showResults();
+    if (typeof saved.selected === 'number' && saved.selected !== 0) { state.selected = saved.selected; renderPreview(); }
+  }
+
+  async function deleteFolder(id) {
+    if (!confirm('Delete this collection? Designs inside it move back to “All designs”.')) return;
+    try { await api('/api/folders/' + id, { method: 'DELETE' }); }
+    catch (_) { showToast('Delete failed'); return; }
+    myFolders = myFolders.filter(f => String(f.id) !== String(id));
+    myDesigns.forEach(d => { if (String(d.folderId) === String(id)) d.folderId = null; });
+    if (String(activeFolder) === String(id)) activeFolder = 'all';
+    renderFolders(); renderDesigns();
+  }
+
+  document.getElementById('folder-add-btn').addEventListener('click', async () => {
+    const name = prompt('Name your collection:', 'New collection');
+    if (name === null) return;
+    try {
+      const { folder } = await api('/api/folders', { method: 'POST', body: JSON.stringify({ name: (name.trim() || 'New collection') }) });
+      myFolders.push(folder);
+      renderFolders();
+    } catch (_) { showToast('Could not create collection'); }
+  });
+
+  document.getElementById('account-back-btn').addEventListener('click', () => {
+    document.getElementById('page-account').hidden = true;
+    document.getElementById('page-create').hidden = false;
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+  document.getElementById('mypage-nav-btn').addEventListener('click', openAccount);
+
+  // ---- Profile editing ----
+  let _pendingAvatar = null;
+  document.getElementById('account-edit-toggle').addEventListener('click', () => {
+    const edit = document.getElementById('account-profile-edit');
+    const show = edit.hidden;
+    edit.hidden = !show;
+    if (show) {
+      document.getElementById('account-name-input').value = currentUser.displayName || '';
+      _pendingAvatar = null;
+      renderAccountAvatar();
+    }
+  });
+  document.getElementById('account-cancel-btn').addEventListener('click', () => {
+    document.getElementById('account-profile-edit').hidden = true; _pendingAvatar = null;
+  });
+  document.getElementById('account-avatar-btn').addEventListener('click', () => document.getElementById('account-avatar-file').click());
+  document.getElementById('account-avatar-file').addEventListener('change', e => {
+    const file = e.target.files[0]; if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      _pendingAvatar = reader.result;
+      document.getElementById('account-avatar-preview').innerHTML =
+        `<img src="${_pendingAvatar}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%">`;
+    };
+    reader.readAsDataURL(file);
+  });
+  document.getElementById('account-save-btn').addEventListener('click', async () => {
+    const payload = { displayName: document.getElementById('account-name-input').value.trim() };
+    if (_pendingAvatar) payload.avatarUrl = _pendingAvatar;
+    try {
+      const { user } = await api('/api/auth/profile', { method: 'PUT', body: JSON.stringify(payload) });
+      currentUser = user; _pendingAvatar = null;
+      refreshAuthUI();
+      document.getElementById('account-name-display').textContent = currentUser.displayName || 'My Page';
+      renderAccountAvatar();
+      document.getElementById('account-profile-edit').hidden = true;
+      showToast('Profile saved.');
+    } catch (e) { showToast(e.message || 'Save failed'); }
+  });
+
+  // ---- Restore a saved design / draft into the generator ----
+  function restoreDesignState(s) {
+    if (!s || typeof s !== 'object') return;
+    if (s.type)    state.type = s.type;
+    if (s.purpose) state.purpose = s.purpose;
+    if (typeof s.prompt === 'string') state.prompt = s.prompt;
+    if (s.businessName) state.businessName = s.businessName;
+    if (typeof s.city === 'string') state.city = s.city;
+    if (s.seed) state.seed = s.seed >>> 0;
+    state.edits = Object.assign(
+      { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 },
+      s.edits || {}
+    );
+    state.snapshots = {};
+    ds._editingVariant = -1; boardEls = []; boardSel = null; ds._savedImg = null;
+    if (typeof s.selected === 'number') state.selected = s.selected;
+  }
+
+  // ---- Save current design to My Page ----
+  async function getCurrentDesignImage() {
+    if (document.getElementById('design-board')) {
+      const b = await captureBoard();
+      if (b) return b;
+    }
+    if (state.snapshots[state.selected]) return state.snapshots[state.selected];
+    const temp = document.createElement('div');
+    temp.style.cssText = 'position:fixed;left:-9999px;top:0;width:400px;height:500px;overflow:hidden;';
+    temp.innerHTML = makePoster(state.selected);
+    document.body.appendChild(temp);
+    let url = null;
+    try {
+      const canvas = await html2canvas(temp, { width: 400, height: 500, scale: 2.7, useCORS: true, allowTaint: true, logging: false });
+      url = canvas.toDataURL('image/png');
+    } catch (e) { console.warn('capture failed', e); }
+    document.body.removeChild(temp);
+    return url;
+  }
+
+  let _pendingSaveDesign = false;
+  async function saveCurrentDesign() {
+    if (!currentUser) {
+      _pendingSaveDesign = true;   // resume this save right after they sign in
+      showToast('Create an account to save your work');
+      openAuth('signup');
+      return;
+    }
+    const btn = document.getElementById('save-design-btn');
+    const orig = btn.innerHTML; btn.disabled = true; btn.textContent = 'Saving…';
+    try {
+      const imageData = await getCurrentDesignImage();
+      if (!imageData) { showToast('Could not capture design'); return; }
+      const title = `${state.businessName} — v${state.selected + 1}`;
+      const { design } = await api('/api/designs', { method: 'POST', body: JSON.stringify({ title, imageData, stateJson: serializeWork() }) });
+      myDesigns.unshift(design);
+      showToast('Saved to My Page!');
+    } catch (e) { showToast(e.message || 'Save failed'); }
+    finally { btn.disabled = false; btn.innerHTML = orig; }
+  }
+  document.getElementById('save-design-btn').addEventListener('click', saveCurrentDesign);
+
+  // ---- Auto-save drafts ----
+  let hasGenerated = false;
+  let _draftTimer = null;
+  function serializeWork() {
+    return JSON.stringify({
+      type: state.type, purpose: state.purpose, prompt: state.prompt,
+      businessName: state.businessName, city: state.city,
+      seed: state.seed, selected: state.selected, edits: state.edits,
+    });
+  }
+  async function saveDraft(keepalive) {
+    if (!currentUser || !hasGenerated) return;
+    const body = JSON.stringify({ stateJson: serializeWork() });
+    try {
+      if (keepalive) {
+        await fetch('/api/draft', { method: 'PUT', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body, keepalive: true });
+      } else {
+        await api('/api/draft', { method: 'PUT', body });
+      }
+    } catch (_) {}
+  }
+  function scheduleDraftSave() {
+    if (!currentUser || !hasGenerated) return;
+    clearTimeout(_draftTimer);
+    _draftTimer = setTimeout(() => saveDraft(false), 1200);
+  }
+  function flushDraft() { if (currentUser && hasGenerated) saveDraft(true); }
+  document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'hidden') flushDraft(); });
+  window.addEventListener('beforeunload', flushDraft);
+
+  // Wrap showResults so reaching the results page marks work + queues a save
+  const _origShowResults = showResults;
+  showResults = function () { _origShowResults(); hasGenerated = true; scheduleDraftSave(); };
+
+  async function maybeRestoreDraft() {
+    if (!currentUser) return;
+    let draft = null;
+    try { draft = (await api('/api/draft')).draft; } catch (_) { return; }
+    if (!draft || !draft.stateJson) return;
+    let s = {};
+    try { s = JSON.parse(draft.stateJson); } catch (_) { return; }
+    if (!s || !s.seed) return;
+    if (confirm('You have unsaved work from last time. Pick up where you left off?')) {
+      restoreDesignState(s);
+      showResults();
+      if (typeof s.selected === 'number' && s.selected !== 0) { state.selected = s.selected; renderPreview(); }
+    }
+  }
+
+  // =====================================================================
+  //  FEEDBACK PAGE (server-backed comments tied to accounts)
+  // =====================================================================
   function fbTimeAgo(ts) {
     const d = Date.now() - ts;
     if (d < 60000)    return 'just now';
@@ -2819,87 +3502,91 @@
     return `${Math.floor(d/86400000)}d ago`;
   }
 
-  function fbRender() {
-    const comments = fbLoadComments();
+  function fbSyncCompose() {
+    const prompt  = document.getElementById('fb-login-prompt');
+    const compose = document.getElementById('fb-compose');
+    if (!prompt || !compose) return;
+    prompt.hidden  = !!currentUser;
+    compose.hidden = !currentUser;
+  }
+
+  async function fbRender() {
     const list  = document.getElementById('fb-list');
     const count = document.getElementById('fb-count');
+    let comments = [];
+    try { comments = (await api('/api/comments')).comments || []; }
+    catch (_) { list.innerHTML = '<div class="fb-empty">Could not load comments.</div>'; return; }
     count.textContent = comments.length === 1 ? '1 comment' : `${comments.length} comments`;
-
-    if (comments.length === 0) {
+    if (!comments.length) {
       list.innerHTML = '<div class="fb-empty">No comments yet — be the first to share!</div>';
       return;
     }
-
-    const me = fbSavedUser();
     list.innerHTML = '';
-    comments.slice().reverse().forEach(cm => {
+    comments.forEach(cm => {
+      const who = cm.authorName || 'Someone';
+      const biz = cm.authorBusiness
+        ? `<span style="color:var(--ink-soft);font-size:12px;margin-left:6px">${esc(cm.authorBusiness)}</span>` : '';
       const div = document.createElement('div');
       div.className = 'fb-comment';
-      const canDel = me && cm.author === me;
       div.innerHTML =
         `<div class="fb-comment-header">` +
-          `<div class="fb-avatar">${esc(cm.author.trim()[0] || '?')}</div>` +
-          `<span class="fb-author">${esc(cm.author)}</span>` +
-          `<span class="fb-time">${fbTimeAgo(cm.ts)}</span>` +
-          (canDel ? `<button class="fb-del" data-id="${cm.id}" title="Delete comment">&#x2715;</button>` : '') +
+          `<div class="fb-avatar">${esc((who.trim()[0] || '?').toUpperCase())}</div>` +
+          `<span class="fb-author">${esc(who)}</span>` + biz +
+          `<span class="fb-time">${fbTimeAgo(cm.createdAt)}</span>` +
+          (cm.own ? `<button class="fb-del" data-id="${cm.id}" title="Delete comment">&#x2715;</button>` : '') +
         `</div>` +
         `<div class="fb-body">${esc(cm.body)}</div>`;
       list.appendChild(div);
     });
-
     list.querySelectorAll('.fb-del').forEach(btn => {
-      btn.addEventListener('click', () => {
-        fbSaveComments(fbLoadComments().filter(c => c.id !== btn.dataset.id));
-        fbRender();
+      btn.addEventListener('click', async () => {
+        try { await api('/api/comments/' + btn.dataset.id, { method: 'DELETE' }); fbRender(); }
+        catch (e) { showToast(e.message || 'Delete failed'); }
       });
     });
   }
 
   document.getElementById('fb-text').addEventListener('input', e => {
-    document.getElementById('fb-charcount').textContent =
-      `${500 - e.target.value.length} characters left`;
+    document.getElementById('fb-charcount').textContent = `${2000 - e.target.value.length} characters left`;
   });
-
-  document.getElementById('fb-submit').addEventListener('click', () => {
-    const name = document.getElementById('fb-name').value.trim();
+  document.getElementById('fb-login-link').addEventListener('click', e => { e.preventDefault(); openAuth('login'); });
+  document.getElementById('fb-submit').addEventListener('click', async () => {
     const body = document.getElementById('fb-text').value.trim();
-    if (!name) { showToast('Please enter your name'); return; }
     if (!body) { showToast('Please write a comment first'); return; }
-    localStorage.setItem(FB_USER_KEY, name);
-    const comments = fbLoadComments();
-    comments.push({ id: Date.now().toString(36), author: name, body, ts: Date.now() });
-    fbSaveComments(comments);
-    document.getElementById('fb-text').value = '';
-    document.getElementById('fb-charcount').textContent = '500 characters left';
-    fbRender();
-    showToast('Comment posted!');
+    try {
+      await api('/api/comments', { method: 'POST', body: JSON.stringify({ body }) });
+      document.getElementById('fb-text').value = '';
+      document.getElementById('fb-charcount').textContent = '2000 characters left';
+      fbRender();
+      showToast('Comment posted!');
+    } catch (e) { showToast(e.message || 'Could not post'); }
   });
 
   function openFeedback() {
-    // remember which page we came from so back button works
     const prev =
       !document.getElementById('page-results').hidden ? 'results' :
-      !document.getElementById('page-edit').hidden    ? 'edit'    : 'create';
+      !document.getElementById('page-edit').hidden    ? 'edit'    :
+      !document.getElementById('page-account').hidden ? 'account' : 'create';
     document.querySelectorAll('.page').forEach(p => p.hidden = true);
     document.getElementById('page-feedback').hidden = false;
-    const saved = fbSavedUser();
-    if (saved) document.getElementById('fb-name').value = saved;
+    fbSyncCompose();
     fbRender();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.getElementById('feedback-back-btn').onclick = () => {
       document.getElementById('page-feedback').hidden = true;
-      if (prev === 'results') {
-        document.getElementById('page-results').hidden = false;
-      } else if (prev === 'edit') {
-        document.getElementById('page-edit').hidden = false;
-      } else {
-        document.getElementById('page-create').hidden = false;
-      }
+      document.getElementById('page-' + prev).hidden = false;
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
   }
-
   document.getElementById('feedback-nav-btn').addEventListener('click', openFeedback);
+
+  // ---- Boot: restore session, then wire up UI ----
+  async function init() {
+    try { currentUser = (await api('/api/auth/me')).user; } catch (_) { currentUser = null; }
+    refreshAuthUI();
+    if (currentUser) { await loadDNA(); await maybeRestoreDraft(); }
+  }
+  init();
 </script>
 </body>
 </html>

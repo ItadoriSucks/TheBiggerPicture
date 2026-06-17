@@ -1,0 +1,13 @@
+{
+  "name": "the-bigger-picture",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Local backend for The Bigger Picture (accounts, designs, Business DNA, feedback)",
+  "main": "server/server.js",
+  "scripts": {
+    "start": "node server/server.js"
+  },
+  "dependencies": {
+    "express": "^5.2.1"
+  }
+}

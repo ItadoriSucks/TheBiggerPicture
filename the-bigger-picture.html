@@ -1600,6 +1600,7 @@
       if (sc.headline) c.head = sc.headline;
       if (sc.subhead)  c.sub = sc.subhead;
       if (sc.eyebrow)  c.eyebrow = sc.eyebrow;
+      if (sc.ribbon)   c.ribbon = sc.ribbon;
     }
     return c;
   }
@@ -1785,8 +1786,8 @@
       `${state.businessName} has something special. ${c.sub || c.head}. Visit us${state.city ? ' in ' + state.city.split(',')[0] : ''} soon!`,
     ];
     return {
-      caption:  (state.siteCopy && state.siteCopy.caption) ? state.siteCopy.caption : pick(captionPool),
-      hashtags: tagMap[state.purpose] || tagMap.sale,
+      caption:  (state.siteCopy && state.siteCopy.caption)  ? state.siteCopy.caption  : pick(captionPool),
+      hashtags: (state.siteCopy && state.siteCopy.hashtags) ? state.siteCopy.hashtags : (tagMap[state.purpose] || tagMap.sale),
     };
   }
 
@@ -1929,23 +1930,31 @@
     document.getElementById('page-results').hidden = true;
     overlay.hidden = false;
     setStep(2);
-    // Kick off website-grounded copy generation in parallel with the loading animation.
-    const copyPromise = (typeof fetchSiteCopy === 'function') ? fetchSiteCopy() : Promise.resolve(null);
-    const usingSite = !!(currentUser && state.brand && state.brand.siteProfile);
-    const phases = [
-      { t: 'Reading your brief',                          d: 600 },
-      { t: usingSite ? 'Reading your website' : 'Pulling brand DNA', d: 600 },
-      { t: 'Generating variant 1 of 3',                   d: 700 },
-      { t: 'Generating variant 2 of 3',                   d: 600 },
-      { t: 'Generating variant 3 of 3',                   d: 600 },
-      { t: 'Adding QR code & captions',                   d: 500 },
-      { t: 'Preparing print pack',                        d: 400 },
-    ];
-    for (const p of phases) {
-      status.textContent = p.t;
-      await new Promise(r => setTimeout(r, p.d));
+
+    // 1) AI copy via Gemini 2.0 Flash (free). Non-fatal — falls back to template copy.
+    status.textContent = 'Asking AI for copy…';
+    try { state.siteCopy = await fetchAiCopy(); } catch (_) { state.siteCopy = null; }
+
+    // 2) AI poster background via Pollinations (free, no key). Non-fatal — the poster
+    //    still renders with the AI copy if the image can't be generated.
+    status.textContent = 'Generating poster image…';
+    try {
+      const tagline = (state.siteCopy && state.siteCopy.subhead) || state.prompt || '';
+      const imgPrompt =
+        `Marketing poster background for ${state.businessName}, a ${state.type} ` +
+        `running a ${state.purpose} campaign. ${tagline}. ` +
+        `Clean, minimal, professional. No text. No words. No letters.`;
+      const result = await api('/api/generate-image', { method: 'POST', body: JSON.stringify({ prompt: imgPrompt }) });
+      if (result && result.imageUrl) {
+        state.edits.imageUrl = result.imageUrl;
+        state.edits.imageOpacity = 35;
+      }
+    } catch (e) {
+      console.warn('Poster image generation failed — continuing without it.', e && e.message ? e.message : e);
     }
-    try { state.siteCopy = await copyPromise; } catch (_) { state.siteCopy = null; }
+
+    status.textContent = 'Preparing your designs…';
+    await new Promise(r => setTimeout(r, 250));
     overlay.hidden = true;
     showResults();
   }
@@ -3279,15 +3288,30 @@
     el.hidden = false;
   }
 
-  // Ask the server for website-grounded copy (AI if a key is set, else local).
-  async function fetchSiteCopy() {
-    if (!currentUser || !state.brand || !state.brand.siteProfile) return null;
+  // Ask the server for AI copy (Gemini 2.0 Flash), optionally grounded in the
+  // scanned website. Works for guests too (no auth). Returns null on any failure
+  // so generation falls back to the built-in template copy.
+  async function fetchAiCopy() {
     try {
-      const { copy } = await api('/api/copy', { method: 'POST', body: JSON.stringify({
-        prompt: state.prompt, purpose: state.purpose,
-        businessName: state.businessName, city: state.city, voice: state.brand.voice,
+      const ai = await api('/api/generate', { method: 'POST', body: JSON.stringify({
+        businessName: state.businessName,
+        businessType: state.type,
+        campaign: state.purpose,
+        voice: (state.brand && state.brand.voice) || '',
+        location: (state.brand && state.brand.location) || state.city || '',
+        prompt: state.prompt || '',
+        siteProfile: (state.brand && state.brand.siteProfile) || null,
       }) });
-      return copy || null;
+      if (!ai || ai.error) return null;
+      return {
+        headline: ai.headline || '',
+        subhead:  ai.tagline  || '',
+        eyebrow:  ai.eyebrow  || '',
+        ribbon:   ai.ribbon   || '',
+        caption:  ai.caption  || '',
+        hashtags: ai.hashtags || '',
+        source:   'ai',
+      };
     } catch (_) { return null; }
   }
 

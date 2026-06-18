@@ -1,5 +1,8 @@
 'use strict';
 
+// Load environment variables (e.g. GEMINI_API_KEY) from the project-root .env.
+require('dotenv').config({ path: require('node:path').join(__dirname, '..', '.env') });
+
 const express = require('express');
 const path = require('node:path');
 const { UPLOADS_DIR } = require('./db');
@@ -21,7 +24,8 @@ app.use('/api/folders', require('./routes/folders'));
 app.use('/api/draft', require('./routes/drafts'));
 app.use('/api/comments', require('./routes/comments'));
 app.use('/api/site', require('./routes/site'));
-app.use('/api/copy', require('./routes/copy'));
+app.use('/api/generate', require('./routes/generate'));
+app.use('/api/generate-image', require('./routes/generate-image'));
 
 // Uploaded design images
 app.use('/uploads', express.static(UPLOADS_DIR));

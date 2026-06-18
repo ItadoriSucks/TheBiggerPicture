@@ -20,6 +20,8 @@ app.use('/api/designs', require('./routes/designs'));
 app.use('/api/folders', require('./routes/folders'));
 app.use('/api/draft', require('./routes/drafts'));
 app.use('/api/comments', require('./routes/comments'));
+app.use('/api/site', require('./routes/site'));
+app.use('/api/copy', require('./routes/copy'));
 
 // Uploaded design images
 app.use('/uploads', express.static(UPLOADS_DIR));

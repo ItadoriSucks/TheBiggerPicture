@@ -32,14 +32,17 @@ db.exec(`
   );
 
   CREATE TABLE IF NOT EXISTS business_dna (
-    user_id       INTEGER PRIMARY KEY,
-    name          TEXT NOT NULL DEFAULT '',
-    logo_path     TEXT NOT NULL DEFAULT '',
-    voice         TEXT NOT NULL DEFAULT 'warm',
-    primary_color TEXT NOT NULL DEFAULT '#1A1614',
-    accent_color  TEXT NOT NULL DEFAULT '#DD4B25',
-    location      TEXT NOT NULL DEFAULT '',
-    updated_at    INTEGER NOT NULL,
+    user_id         INTEGER PRIMARY KEY,
+    name            TEXT NOT NULL DEFAULT '',
+    logo_path       TEXT NOT NULL DEFAULT '',
+    voice           TEXT NOT NULL DEFAULT 'warm',
+    primary_color   TEXT NOT NULL DEFAULT '#1A1614',
+    accent_color    TEXT NOT NULL DEFAULT '#DD4B25',
+    location        TEXT NOT NULL DEFAULT '',
+    website         TEXT NOT NULL DEFAULT '',
+    site_profile    TEXT NOT NULL DEFAULT '',
+    site_fetched_at INTEGER,
+    updated_at      INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 
@@ -84,5 +87,18 @@ db.exec(`
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
 `);
+
+// --- Lightweight migrations: add columns to existing databases if missing ---
+function ensureColumns(table, columns) {
+  const existing = new Set(db.prepare(`PRAGMA table_info(${table})`).all().map(c => c.name));
+  for (const [name, def] of columns) {
+    if (!existing.has(name)) db.exec(`ALTER TABLE ${table} ADD COLUMN ${name} ${def}`);
+  }
+}
+ensureColumns('business_dna', [
+  ['website',         "TEXT NOT NULL DEFAULT ''"],
+  ['site_profile',    "TEXT NOT NULL DEFAULT ''"],
+  ['site_fetched_at', 'INTEGER'],
+]);
 
 module.exports = { db, DATA_DIR, UPLOADS_DIR };

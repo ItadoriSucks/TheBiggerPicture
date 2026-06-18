@@ -312,6 +312,34 @@
   .brand-modal-footer { padding: 18px 26px; border-top: 1px solid var(--rule); flex-shrink: 0; }
   .brand-save-btn { width: 100%; appearance: none; background: var(--ink); color: var(--bg); border: 0; padding: 15px; border-radius: 100px; font-family: 'Fraunces', serif; font-size: 17px; cursor: pointer; transition: all 0.18s; }
   .brand-save-btn:hover { background: var(--accent); }
+  /* Website scan */
+  .brand-site-row { display: flex; gap: 8px; }
+  .brand-site-row .brand-field-input { flex: 1; }
+  .brand-scan-btn { flex-shrink: 0; appearance: none; background: var(--ink); color: var(--bg); border: 0; border-radius: 8px; padding: 0 16px; font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: background 0.15s; }
+  .brand-scan-btn:hover { background: var(--accent); }
+  .brand-scan-btn:disabled { opacity: 0.55; cursor: default; }
+  .brand-site-status { font-size: 12.5px; margin-top: 7px; color: var(--ink-soft); }
+  .brand-site-status.error { color: var(--accent); }
+  .brand-site-status.ok { color: var(--brand-mint, #2A7A4B); }
+  .brand-site-profile { margin-top: 9px; border: 1px solid var(--rule); border-radius: 10px; padding: 11px 13px; background: var(--bg); }
+  .brand-site-profile .bsp-title { font-weight: 600; font-size: 13.5px; color: var(--ink); margin-bottom: 3px; }
+  .brand-site-profile .bsp-desc { font-size: 12.5px; color: var(--ink-soft); line-height: 1.45; }
+  .brand-site-profile .bsp-tags { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .brand-site-profile .bsp-tag { font-size: 11px; background: var(--accent-soft); color: var(--accent); padding: 2px 8px; border-radius: 100px; }
+  .brand-site-profile .bsp-foot { margin-top: 8px; font-size: 11.5px; color: var(--ink-faint); display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+  .brand-site-profile .bsp-rescan { background: none; border: 0; color: var(--accent); font-size: 11.5px; font-weight: 600; cursor: pointer; padding: 0; }
+  /* Sourced-from panel on results */
+  .sourced-from { margin-top: 14px; border: 1px solid var(--rule); border-radius: 12px; padding: 13px 15px; background: var(--bg); font-size: 13px; }
+  .sourced-from .sf-head { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; }
+  .sourced-from .sf-badge { font-size: 10.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; padding: 3px 9px; border-radius: 100px; }
+  .sourced-from .sf-badge.ai { background: var(--accent-soft); color: var(--accent); }
+  .sourced-from .sf-badge.local { background: var(--rule); color: var(--ink-soft); }
+  .sourced-from .sf-src { color: var(--ink-soft); font-size: 12.5px; }
+  .sourced-from .sf-src a { color: var(--ink); font-weight: 600; text-decoration: none; }
+  .sourced-from .sf-src a:hover { color: var(--accent); }
+  .sourced-from .sf-detail { color: var(--ink-soft); line-height: 1.5; }
+  .sourced-from .sf-tags { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .sourced-from .sf-tag { font-size: 11px; background: var(--bg-elevated); border: 1px solid var(--rule); color: var(--ink-soft); padding: 2px 8px; border-radius: 100px; }
   /* Brand logo mini when image is uploaded */
   .brand-logo-mini img { width: 100%; height: 100%; object-fit: contain; border-radius: 4px; }
 
@@ -799,7 +827,7 @@
         <div style="flex:1">
           <div class="af-label">Auto-fill from Google Maps or Yelp</div>
           <div class="autofill-input-row">
-            <input class="autofill-input" id="autofill-url" type="url" placeholder="Paste your Google Maps or Yelp link…"/>
+            <input class="autofill-input" id="autofill-url" type="url" placeholder="Paste your website link…"/>
             <button class="autofill-go" id="autofill-btn">Fill →</button>
           </div>
           <div class="autofill-status" id="autofill-status"></div>
@@ -950,6 +978,17 @@
           <input class="brand-field-input" id="brand-location-input" type="text" placeholder="e.g. Seattle, WA" maxlength="48">
         </div>
 
+        <!-- Website (read to tailor your designs to your real business) -->
+        <div class="brand-field">
+          <label class="brand-field-label" for="brand-website-input">Website <span style="color:var(--ink-faint);font-weight:400;text-transform:none;letter-spacing:0">— we read it to tailor your copy</span></label>
+          <div class="brand-site-row">
+            <input class="brand-field-input" id="brand-website-input" type="url" placeholder="yourbusiness.com" maxlength="200">
+            <button type="button" class="brand-scan-btn" id="brand-scan-btn">Scan&nbsp;site</button>
+          </div>
+          <div class="brand-site-status" id="brand-site-status" hidden></div>
+          <div class="brand-site-profile" id="brand-site-profile" hidden></div>
+        </div>
+
         <!-- Voice -->
         <div class="brand-field">
           <span class="brand-field-label">Brand voice</span>
@@ -1061,6 +1100,9 @@
 
       <!-- Main preview -->
       <div class="preview-stage" id="preview-stage"></div>
+
+      <!-- Sourced from: what the copy was grounded in (transparency) -->
+      <div class="sourced-from" id="sourced-from" hidden></div>
 
       <!-- Before/After panel -->
       <div class="ba-panel" id="ba-panel">
@@ -1433,6 +1475,7 @@
     baVisible: false, gateOpen: false, seed: 1,
     edits: { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 },
     snapshots: {},
+    siteCopy: null,   // website-grounded copy (AI or local) for the current generation
   };
 
   // ---- Seeded RNG (xorshift32) ----
@@ -1541,7 +1584,7 @@
     }
     const sentences = text ? text.split(/[.!?]/).map(s => s.trim()).filter(Boolean) : [];
     const sub = sentences[0]?.slice(0, 55) || '';
-    return {
+    const c = {
       head,
       sub,
       eyebrow:   pick(EYEBROWS),
@@ -1551,6 +1594,14 @@
       hereword:  pick(HEREWORDS),
       phrase:    pick(PURPOSE_PHRASES[state.purpose] || PURPOSE_PHRASES.sale),
     };
+    // Ground the copy in the real website (AI or local extraction) when available.
+    const sc = state.siteCopy;
+    if (sc) {
+      if (sc.headline) c.head = sc.headline;
+      if (sc.subhead)  c.sub = sc.subhead;
+      if (sc.eyebrow)  c.eyebrow = sc.eyebrow;
+    }
+    return c;
   }
 
   // Returns parsed content with editor overrides applied for the selected variant
@@ -1734,7 +1785,7 @@
       `${state.businessName} has something special. ${c.sub || c.head}. Visit us${state.city ? ' in ' + state.city.split(',')[0] : ''} soon!`,
     ];
     return {
-      caption:  pick(captionPool),
+      caption:  (state.siteCopy && state.siteCopy.caption) ? state.siteCopy.caption : pick(captionPool),
       hashtags: tagMap[state.purpose] || tagMap.sale,
     };
   }
@@ -1774,24 +1825,35 @@
     runGeneration();
   });
 
-  // ---- Auto-fill ----
-  document.getElementById('autofill-btn').addEventListener('click', () => {
+  // ---- Auto-fill (reads the real website — no fabricated data) ----
+  document.getElementById('autofill-btn').addEventListener('click', async () => {
     const url = document.getElementById('autofill-url').value.trim();
     if (!url) return;
     const status = document.getElementById('autofill-status');
-    status.textContent = 'Scanning business info...';
     status.classList.add('visible');
-    setTimeout(() => {
-      const mockNames = ['The Golden Spoon', 'Pho Sriracha', 'Main Street Bakery', 'Blue Bottle Coffee', 'Sunrise Salon'];
-      const mock = mockNames[Math.floor(Math.random() * mockNames.length)];
-      document.getElementById('prompt-input').value = `${mock} - welcoming neighborhood spot known for quality and warm hospitality. Running a weekend promo.`;
-      state.prompt = document.getElementById('prompt-input').value;
-      state.businessName = mock;
-      document.getElementById('brand-name-display').textContent = mock;
-      document.getElementById('brand-logo-mini').textContent = mock[0];
-      if (url.includes('yelp')) { document.getElementById('website-input').value = url; state.website = url; }
-      status.textContent = 'Business info filled in from your listing.';
-    }, 1800);
+    if (!currentUser) { status.textContent = 'Sign in first, then we can read your site.'; openAuth('signup'); return; }
+    const btn = document.getElementById('autofill-btn');
+    const orig = btn.innerHTML; btn.disabled = true; btn.textContent = '…';
+    status.textContent = 'Reading your business info…';
+    try {
+      const { profile } = await api('/api/site/analyze', { method: 'POST', body: JSON.stringify({ url }) });
+      state.brand.website = profile.url || url;
+      state.brand.siteProfile = profile;
+      const name = (profile.siteName || (profile.title || '').split(/[|–—\-]/)[0]).trim();
+      if (name) {
+        state.businessName = name; state.brand.name = name;
+        document.getElementById('brand-name-display').textContent = name;
+        const mini = document.getElementById('brand-logo-mini');
+        if (mini && !state.brand.logoUrl) mini.textContent = name[0];
+      }
+      const desc = profile.description || (profile.headings || [])[0] || '';
+      if (desc) { const ta = document.getElementById('prompt-input'); ta.value = desc; state.prompt = desc; }
+      status.textContent = 'Filled from your site — tweak the brief and generate.';
+    } catch (e) {
+      status.textContent = e.message || 'Could not read that link.';
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig;
+    }
   });
 
   // ---- Brief interactions ----
@@ -1859,6 +1921,7 @@
     state.seed = (Date.now() ^ (Math.random() * 0xffffffff | 0)) >>> 0 || 1;
     state.edits = { head:'', sub:'', eyebrow:'', ribbon:'', bgColor:'', fgColor:'', acColor:'', imageUrl:'', imageOpacity:40, layout:-1 };
     state.snapshots = {};
+    state.siteCopy = null;
     ds._editingVariant = -1; boardEls = []; boardSel = null; ds._savedImg = null;
     const overlay = document.getElementById('loading');
     const status  = document.getElementById('loading-status');
@@ -1866,19 +1929,23 @@
     document.getElementById('page-results').hidden = true;
     overlay.hidden = false;
     setStep(2);
+    // Kick off website-grounded copy generation in parallel with the loading animation.
+    const copyPromise = (typeof fetchSiteCopy === 'function') ? fetchSiteCopy() : Promise.resolve(null);
+    const usingSite = !!(currentUser && state.brand && state.brand.siteProfile);
     const phases = [
-      { t: 'Reading your brief',        d: 600 },
-      { t: 'Pulling brand DNA',         d: 600 },
-      { t: 'Generating variant 1 of 3', d: 700 },
-      { t: 'Generating variant 2 of 3', d: 600 },
-      { t: 'Generating variant 3 of 3', d: 600 },
-      { t: 'Adding QR code & captions', d: 500 },
-      { t: 'Preparing print pack',      d: 400 },
+      { t: 'Reading your brief',                          d: 600 },
+      { t: usingSite ? 'Reading your website' : 'Pulling brand DNA', d: 600 },
+      { t: 'Generating variant 1 of 3',                   d: 700 },
+      { t: 'Generating variant 2 of 3',                   d: 600 },
+      { t: 'Generating variant 3 of 3',                   d: 600 },
+      { t: 'Adding QR code & captions',                   d: 500 },
+      { t: 'Preparing print pack',                        d: 400 },
     ];
     for (const p of phases) {
       status.textContent = p.t;
       await new Promise(r => setTimeout(r, p.d));
     }
+    try { state.siteCopy = await copyPromise; } catch (_) { state.siteCopy = null; }
     overlay.hidden = true;
     showResults();
   }
@@ -2746,6 +2813,7 @@
   state.brand = {
     name: 'Marigold & Co.', logoUrl: '', logoName: '',
     voice: 'warm', primaryColor: '#1A1614', accentColor: '#DD4B25', location: '',
+    website: '', siteProfile: null,
   };
 
   const VOICE_LABELS = {
@@ -2792,6 +2860,9 @@
     const b = state.brand;
     document.getElementById('brand-name-input').value     = b.name;
     document.getElementById('brand-location-input').value = b.location;
+    document.getElementById('brand-website-input').value  = b.website || '';
+    document.getElementById('brand-site-status').hidden   = true;
+    renderSiteProfilePreview();
     setBrandColor('primary', b.primaryColor);
     setBrandColor('accent',  b.accentColor);
     buildBrandColorPresets();
@@ -3067,8 +3138,8 @@
     try { await api('/api/auth/logout', { method: 'POST' }); } catch (_) {}
     currentUser = null; myDesigns = []; myFolders = []; activeFolder = 'all'; hasGenerated = false;
     _brandDirty = false; clearTimeout(_brandSaveTimer); _pendingSaveDesign = false;
-    state.brand = { name: 'Marigold & Co.', logoUrl: '', logoName: '', voice: 'warm', primaryColor: '#1A1614', accentColor: '#DD4B25', location: '' };
-    state.businessName = state.brand.name;
+    state.brand = { name: 'Marigold & Co.', logoUrl: '', logoName: '', voice: 'warm', primaryColor: '#1A1614', accentColor: '#DD4B25', location: '', website: '', siteProfile: null };
+    state.businessName = state.brand.name; state.siteCopy = null;
     updateBrandCard();
     refreshAuthUI();
     document.querySelectorAll('.page').forEach(p => p.hidden = true);
@@ -3090,6 +3161,8 @@
     if (dna.primaryColor) b.primaryColor = dna.primaryColor;
     if (dna.accentColor)  b.accentColor = dna.accentColor;
     b.location = dna.location || '';
+    b.website = dna.website || '';
+    b.siteProfile = dna.siteProfile || null;
     state.businessName = b.name;
     if (b.location) state.city = b.location;
     updateBrandCard();
@@ -3111,6 +3184,7 @@
       await api('/api/dna', { method: 'PUT', body: JSON.stringify({
         name: b.name, logoUrl: b.logoUrl, voice: b.voice,
         primaryColor: b.primaryColor, accentColor: b.accentColor, location: b.location,
+        website: b.website || '',
       }) });
       _brandDirty = false;
       return true;
@@ -3140,6 +3214,90 @@
       if (ok) showToast('Your brand was saved to your account.');
     }
   }
+
+  // ---- Website scanning + grounded copy ----
+  // Scan the brand website (server fetches + extracts + persists the profile).
+  async function scanSite(rescan) {
+    const input  = document.getElementById('brand-website-input');
+    const status = document.getElementById('brand-site-status');
+    const btn    = document.getElementById('brand-scan-btn');
+    const url = input.value.trim();
+    if (!url) { status.hidden = false; status.className = 'brand-site-status error'; status.textContent = 'Enter your website address first.'; return; }
+    if (!currentUser) { showToast('Sign in to scan your website'); openAuth('signup'); return; }
+    btn.disabled = true; const orig = btn.innerHTML; btn.textContent = 'Scanning…';
+    status.hidden = false; status.className = 'brand-site-status'; status.textContent = rescan ? 'Re-reading your website…' : 'Reading your website…';
+    try {
+      const { profile } = await api('/api/site/analyze', { method: 'POST', body: JSON.stringify({ url }) });
+      state.brand.website = profile.url || url;
+      state.brand.siteProfile = profile;
+      input.value = state.brand.website;
+      status.className = 'brand-site-status ok';
+      status.textContent = 'Got it — your designs will be tailored to this.';
+      renderSiteProfilePreview();
+    } catch (e) {
+      status.className = 'brand-site-status error';
+      status.textContent = e.message || 'Could not read that website.';
+    } finally {
+      btn.disabled = false; btn.innerHTML = orig;
+    }
+  }
+
+  // Inline preview of what we read (transparency, inside the brand modal).
+  function renderSiteProfilePreview() {
+    const box = document.getElementById('brand-site-profile');
+    if (!box) return;
+    const p = state.brand.siteProfile;
+    if (!p) { box.hidden = true; box.innerHTML = ''; return; }
+    const tags = (p.keywords || []).slice(0, 6).map(k => `<span class="bsp-tag">${esc(k)}</span>`).join('');
+    const when = p.fetchedAt ? fbTimeAgo(p.fetchedAt) : '';
+    box.innerHTML =
+      (p.title ? `<div class="bsp-title">${esc(p.title)}</div>` : '') +
+      (p.description ? `<div class="bsp-desc">${esc(p.description)}</div>` : '') +
+      (tags ? `<div class="bsp-tags">${tags}</div>` : '') +
+      `<div class="bsp-foot"><span>Read from your site${when ? ' · ' + esc(when) : ''}</span>` +
+      `<button type="button" class="bsp-rescan" id="brand-rescan-btn">Re-scan</button></div>`;
+    box.hidden = false;
+    const rb = document.getElementById('brand-rescan-btn');
+    if (rb) rb.onclick = () => scanSite(true);
+  }
+
+  // Provenance panel on the results page.
+  function renderSourcedFrom() {
+    const el = document.getElementById('sourced-from');
+    if (!el) return;
+    const p = state.brand && state.brand.siteProfile;
+    if (!p) { el.hidden = true; el.innerHTML = ''; return; }
+    const isAi = state.siteCopy && state.siteCopy.source === 'ai';
+    let host = p.url;
+    try { host = new URL(p.finalUrl || p.url).hostname.replace(/^www\./, ''); } catch (_) {}
+    const tags = (p.keywords || []).slice(0, 6).map(k => `<span class="sf-tag">${esc(k)}</span>`).join('');
+    el.innerHTML =
+      `<div class="sf-head"><span class="sf-badge ${isAi ? 'ai' : 'local'}">${isAi ? 'AI-tailored' : 'From your site'}</span>` +
+      `<span class="sf-src">Sourced from <a href="${esc(p.finalUrl || p.url)}" target="_blank" rel="noopener noreferrer">${esc(host)}</a></span></div>` +
+      (p.title ? `<div class="sf-detail"><strong>${esc(p.title)}</strong>${p.description ? ' — ' + esc(p.description) : ''}</div>` : '') +
+      (tags ? `<div class="sf-tags">${tags}</div>` : '');
+    el.hidden = false;
+  }
+
+  // Ask the server for website-grounded copy (AI if a key is set, else local).
+  async function fetchSiteCopy() {
+    if (!currentUser || !state.brand || !state.brand.siteProfile) return null;
+    try {
+      const { copy } = await api('/api/copy', { method: 'POST', body: JSON.stringify({
+        prompt: state.prompt, purpose: state.purpose,
+        businessName: state.businessName, city: state.city, voice: state.brand.voice,
+      }) });
+      return copy || null;
+    } catch (_) { return null; }
+  }
+
+  document.getElementById('brand-scan-btn').addEventListener('click', () => scanSite(false));
+  document.getElementById('brand-website-input').addEventListener('change', () => {
+    const v = document.getElementById('brand-website-input').value.trim();
+    state.brand.website = v;
+    if (!v) { state.brand.siteProfile = null; renderSiteProfilePreview(); }
+    scheduleBrandSave();
+  });
 
   // ---- My Page ----
   function openAccount() {
@@ -3474,7 +3632,7 @@
 
   // Wrap showResults so reaching the results page marks work + queues a save
   const _origShowResults = showResults;
-  showResults = function () { _origShowResults(); hasGenerated = true; scheduleDraftSave(); };
+  showResults = function () { _origShowResults(); hasGenerated = true; scheduleDraftSave(); renderSourcedFrom(); };
 
   async function maybeRestoreDraft() {
     if (!currentUser) return;

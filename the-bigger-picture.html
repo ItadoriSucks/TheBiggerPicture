@@ -1355,6 +1355,11 @@
   .camp-results { margin-top: 30px; display: grid; gap: 18px; max-width: 820px; }
   .camp-card { border: 1px solid var(--rule); border-radius: 14px; padding: 16px 20px; background: var(--bg-elevated); }
   .camp-card-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
+  .camp-image { margin: 6px 0 12px; border-radius: 10px; overflow: hidden; background: var(--bg); min-height: 60px; }
+  .camp-image img { width: 100%; display: block; border-radius: 10px; }
+  .camp-image-ph { padding: 26px; text-align: center; color: var(--ink-faint); font-size: 13px; }
+  .camp-img-retry { margin: 18px auto; display: block; background: none; border: 1px solid var(--rule-strong); border-radius: 8px; padding: 7px 14px; font: inherit; font-size: 13px; color: var(--ink-soft); cursor: pointer; }
+  .camp-img-retry:hover { color: var(--accent); border-color: var(--accent); }
   .camp-asset { border-top: 1px solid var(--rule); padding: 13px 0; }
   .camp-asset:first-of-type { border-top: 0; }
   .camp-plat { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); background: var(--accent-soft); padding: 2px 9px; border-radius: 100px; margin-bottom: 7px; }
@@ -3309,21 +3314,50 @@
     if (!url) { status.hidden = false; status.className = 'brand-site-status error'; status.textContent = 'Enter your website address first.'; return; }
     if (!currentUser) { showToast('Sign in to scan your website'); openAuth('signup'); return; }
     btn.disabled = true; const orig = btn.innerHTML; btn.textContent = 'Scanning…';
-    status.hidden = false; status.className = 'brand-site-status'; status.textContent = rescan ? 'Re-reading your website…' : 'Reading your website…';
+    status.hidden = false; status.className = 'brand-site-status';
+    status.textContent = (rescan ? 'Re-crawling' : 'Crawling') + ' your website for brand DNA — this can take ~30–60s…';
     try {
-      const { profile } = await api('/api/site/analyze', { method: 'POST', body: JSON.stringify({ url }) });
+      const { profile, brand } = await api('/api/site/analyze', { method: 'POST', body: JSON.stringify({ url }) });
       state.brand.website = profile.url || url;
       state.brand.siteProfile = profile;
       input.value = state.brand.website;
+      if (brand) applyScannedBrand(brand);
       status.className = 'brand-site-status ok';
-      status.textContent = 'Got it — your designs will be tailored to this.';
+      status.textContent = (profile.source === 'dna-studio')
+        ? 'Got your full brand DNA — name, colors, voice & logo applied.'
+        : 'Got it — your designs will be tailored to this.';
       renderSiteProfilePreview();
+      scheduleBrandSave();
     } catch (e) {
       status.className = 'brand-site-status error';
       status.textContent = e.message || 'Could not read that website.';
     } finally {
       btn.disabled = false; btn.innerHTML = orig;
     }
+  }
+
+  // Apply DNA Studio's crawled brand (name, real colors, voice, logo) to the modal + state.
+  function applyScannedBrand(brand) {
+    const b = state.brand;
+    if (brand.name) {
+      b.name = brand.name; state.businessName = brand.name;
+      const ni = document.getElementById('brand-name-input'); if (ni) ni.value = brand.name;
+    }
+    if (brand.primaryColor) setBrandColor('primary', brand.primaryColor);
+    if (brand.accentColor)  setBrandColor('accent', brand.accentColor);
+    if (typeof syncBrandPresetHighlight === 'function') syncBrandPresetHighlight();
+    if (brand.voice) {
+      b.voice = brand.voice;
+      document.querySelectorAll('.brand-voice-opt').forEach((v) => v.classList.toggle('selected', v.dataset.voice === brand.voice));
+    }
+    if (brand.logoUrl) {
+      b.logoUrl = brand.logoUrl; b.logoName = 'From your website';
+      const img = document.getElementById('brand-logo-preview-img'); if (img) img.src = brand.logoUrl;
+      const nm = document.getElementById('brand-logo-preview-name'); if (nm) nm.textContent = 'From your website';
+      const wrap = document.getElementById('brand-logo-preview-wrap'); if (wrap) wrap.hidden = false;
+      const drop = document.getElementById('brand-logo-drop'); if (drop) drop.style.display = 'none';
+    }
+    updateBrandCard();
   }
 
   // Inline preview of what we read (transparency, inside the brand modal).
@@ -3333,12 +3367,20 @@
     const p = state.brand.siteProfile;
     if (!p) { box.hidden = true; box.innerHTML = ''; return; }
     const tags = (p.keywords || []).slice(0, 6).map(k => `<span class="bsp-tag">${esc(k)}</span>`).join('');
+    const swatches = (p.colors || []).slice(0, 6).map(c =>
+      `<span title="${esc((c.usage || '') + ' ' + (c.hex || ''))}" style="display:inline-block;width:18px;height:18px;border-radius:4px;border:1px solid rgba(0,0,0,.12);background:${esc(c.hex || '#ccc')}"></span>`).join('');
+    const meta = [];
+    if (p.tone && p.tone.primary) meta.push('Tone: ' + esc(p.tone.primary));
+    if (p.industry) meta.push('Industry: ' + esc(p.industry));
+    if (p.audience && p.audience.primary) meta.push('Audience: ' + esc(p.audience.primary));
     const when = p.fetchedAt ? fbTimeAgo(p.fetchedAt) : '';
     box.innerHTML =
       (p.title ? `<div class="bsp-title">${esc(p.title)}</div>` : '') +
       (p.description ? `<div class="bsp-desc">${esc(p.description)}</div>` : '') +
+      (swatches ? `<div class="bsp-tags" style="align-items:center">${swatches}</div>` : '') +
+      (meta.length ? `<div class="bsp-desc" style="margin-top:6px;font-size:11.5px">${meta.join(' · ')}</div>` : '') +
       (tags ? `<div class="bsp-tags">${tags}</div>` : '') +
-      `<div class="bsp-foot"><span>Read from your site${when ? ' · ' + esc(when) : ''}</span>` +
+      `<div class="bsp-foot"><span>${p.source === 'dna-studio' ? 'Full brand DNA' : 'Read'} from your site${when ? ' · ' + esc(when) : ''}</span>` +
       `<button type="button" class="bsp-rescan" id="brand-rescan-btn">Re-scan</button></div>`;
     box.hidden = false;
     const rb = document.getElementById('brand-rescan-btn');
@@ -3870,11 +3912,32 @@
           `<div class="camp-caption">${esc(a.caption || '')}</div>` +
           ((a.hashtags && a.hashtags.length) ? `<div class="camp-tags">${esc(a.hashtags.join(' '))}</div>` : '') +
         `</div>`).join('');
-      return `<div class="camp-card"><div class="camp-card-title">${esc(c.title || ('Concept ' + (i + 1)))}</div>${assets}</div>`;
+      const prompt = (c.assets || []).map(a => a.imagePrompt).find(Boolean) || c.title || '';
+      const imageSlot = `<div class="camp-image" data-prompt="${esc(prompt)}"><div class="camp-image-ph">✦ Generating image…</div></div>`;
+      return `<div class="camp-card"><div class="camp-card-title">${esc(c.title || ('Concept ' + (i + 1)))}</div>${imageSlot}${assets}</div>`;
     }).join('');
     el.querySelectorAll('.camp-copy').forEach(b => b.addEventListener('click', () => {
       try { navigator.clipboard.writeText(b.dataset.copy); showToast('Caption copied'); } catch (_) {}
     }));
+    // Stagger the calls so Pollinations isn't hit by all concepts at once.
+    [...el.querySelectorAll('.camp-image')].forEach((slot, i) => setTimeout(() => genCampaignImage(slot, 0), i * 1300));
+  }
+
+  // Render a concept's AI image prompt into a real image via Pollinations (free).
+  // Auto-retries once, then offers a manual retry (the free service can be flaky).
+  async function genCampaignImage(slot, attempt) {
+    const prompt = (slot.dataset.prompt || '').trim();
+    if (!prompt) { slot.style.display = 'none'; return; }
+    try {
+      const { imageUrl } = await api('/api/generate-image', { method: 'POST', body: JSON.stringify({ prompt: prompt + '. Clean, professional, on-brand, no text, no words.' }) });
+      if (!imageUrl) throw new Error('empty');
+      slot.innerHTML = `<img src="${imageUrl}" alt="" loading="lazy">`;
+    } catch (_) {
+      if (attempt < 2) { await new Promise(r => setTimeout(r, 1800)); return genCampaignImage(slot, attempt + 1); }
+      slot.innerHTML = `<button type="button" class="camp-img-retry">↻ Retry image</button>`;
+      const rb = slot.querySelector('.camp-img-retry');
+      if (rb) rb.onclick = () => { slot.innerHTML = '<div class="camp-image-ph">✦ Generating image…</div>'; genCampaignImage(slot, 0); };
+    }
   }
 
   async function loadSavedCampaigns() {

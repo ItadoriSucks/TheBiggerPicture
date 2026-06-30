@@ -38,8 +38,18 @@ router.post('/', async (req, res) => {
     const brand = await dna.analyzeBrand(url);
     const campaign = await dna.generateCampaign({ brandId: brand.id, goal, platforms });
     const now = Date.now();
+    const d = brand.dna || {};
     const payload = {
-      brand: { name: brand.name, url: brand.url, tone: brand.tone, industry: brand.industry, colors: brand.colors || [] },
+      brand: {
+        name: brand.name,
+        url: brand.url,
+        tone: brand.tone,
+        industry: brand.industry,
+        colors: brand.colors || [],
+        tagline: d.tagline || '',
+        keywords: Array.isArray(d.keywords) ? d.keywords.slice(0, 5) : [],
+        logoUrl: (d.logoUrl && /^https?:/i.test(d.logoUrl)) ? d.logoUrl : '',
+      },
       campaign,
     };
     const info = db.prepare(

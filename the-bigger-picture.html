@@ -1355,11 +1355,19 @@
   .camp-results { margin-top: 30px; display: grid; gap: 18px; max-width: 820px; }
   .camp-card { border: 1px solid var(--rule); border-radius: 14px; padding: 16px 20px; background: var(--bg-elevated); }
   .camp-card-title { font-weight: 700; font-size: 15px; margin-bottom: 4px; }
-  .camp-image { margin: 6px 0 12px; border-radius: 10px; overflow: hidden; background: var(--bg); min-height: 60px; }
+  .camp-image { position: relative; margin: 6px 0 12px; border-radius: 10px; overflow: hidden; background: var(--bg); min-height: 60px; }
   .camp-image img { width: 100%; display: block; border-radius: 10px; }
+  .camp-image-logo { position: absolute; right: 10px; bottom: 10px; max-width: 84px; max-height: 40px; object-fit: contain; background: rgba(255,255,255,.88); border-radius: 6px; padding: 4px 6px; box-shadow: 0 2px 8px rgba(0,0,0,.18); }
   .camp-image-ph { padding: 26px; text-align: center; color: var(--ink-faint); font-size: 13px; }
   .camp-img-retry { margin: 18px auto; display: block; background: none; border: 1px solid var(--rule-strong); border-radius: 8px; padding: 7px 14px; font: inherit; font-size: 13px; color: var(--ink-soft); cursor: pointer; }
   .camp-img-retry:hover { color: var(--accent); border-color: var(--accent); }
+  /* Centered Campaign Studio layout */
+  #page-campaigns h2, #page-campaigns .camp-intro, .camp-status { text-align: center; }
+  #page-campaigns .camp-intro { margin-left: auto; margin-right: auto; }
+  .camp-form { margin-left: auto; margin-right: auto; }
+  .camp-generate { justify-self: center; }
+  .camp-results { margin-left: auto; margin-right: auto; }
+  #camp-saved-wrap { max-width: 720px; margin-left: auto; margin-right: auto; text-align: left; }
   .camp-asset { border-top: 1px solid var(--rule); padding: 13px 0; }
   .camp-asset:first-of-type { border-top: 0; }
   .camp-plat { display: inline-block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .05em; color: var(--accent); background: var(--accent-soft); padding: 2px 9px; border-radius: 100px; margin-bottom: 7px; }
@@ -3899,39 +3907,67 @@
     };
   }
 
+  // Build an on-brand image prompt: scene + the site's real colors/vibe + a short
+  // legible headline matching the campaign + the brand name/tagline.
+  function buildCampImagePrompt(scene, headline, brandName, colorStr, vibe, tagline) {
+    const parts = ['Modern, eye-catching social media marketing graphic, poster style.'];
+    if (scene) parts.push(scene.replace(/\s+/g, ' ').trim() + '.');
+    if (colorStr) parts.push('Use a color palette of ' + colorStr + ', matching the brand exactly.');
+    if (vibe) parts.push('A ' + vibe + ' vibe and mood.');
+    if (headline) parts.push('Prominently feature the short headline text "' + headline + '" in large, bold, clean, perfectly legible, correctly spelled lettering.');
+    else parts.push('No text or words.');
+    if (brandName) parts.push('For the brand "' + brandName + '"' + (tagline ? ' (' + tagline + ')' : '') + '.');
+    parts.push('High quality, professional, visually balanced, on-brand.');
+    return parts.join(' ');
+  }
+
   function renderCampaign(payload) {
     const el = document.getElementById('camp-results');
     const camp = (payload && payload.campaign) || {};
+    const pb  = (payload && payload.brand) || {};
+    const sp  = (state.brand && state.brand.siteProfile) || {};
+    // Colors: prefer the campaign site's crawled colors, else the saved Business DNA.
+    let colorList = (pb.colors || []).map((c) => String(c).trim()).filter((c) => /^#?[0-9a-f]{3,8}$/i.test(c)).map((c) => (c[0] === '#' ? c : '#' + c));
+    if (!colorList.length) colorList = [state.brand && state.brand.primaryColor, state.brand && state.brand.accentColor].filter(Boolean);
+    const colorStr = colorList.slice(0, 3).join(' and ');
+    const vibe = pb.tone || (sp.tone && sp.tone.primary) || '';
+    const brandName = pb.name || (state.brand && state.brand.name) || '';
+    const tagline = (pb.tagline || sp.tagline || '').slice(0, 60);
+    const logo = pb.logoUrl || (state.brand && /^https?:/i.test(state.brand.logoUrl || '') ? state.brand.logoUrl : '');
     const concepts = camp.concepts || [];
     if (!concepts.length) { el.innerHTML = '<div class="fb-empty">No content was generated — try again.</div>'; return; }
     el.innerHTML = concepts.map((c, i) => {
-      const assets = (c.assets || []).map(a =>
+      const assets = (c.assets || []).map((a) =>
         `<div class="camp-asset">` +
           `<button class="camp-copy" data-copy="${esc(a.caption || '')}">Copy</button>` +
           `<span class="camp-plat">${esc(a.platform || '')}</span>` +
           `<div class="camp-caption">${esc(a.caption || '')}</div>` +
           ((a.hashtags && a.hashtags.length) ? `<div class="camp-tags">${esc(a.hashtags.join(' '))}</div>` : '') +
         `</div>`).join('');
-      const prompt = (c.assets || []).map(a => a.imagePrompt).find(Boolean) || c.title || '';
-      const imageSlot = `<div class="camp-image" data-prompt="${esc(prompt)}"><div class="camp-image-ph">✦ Generating image…</div></div>`;
+      const scene = (c.assets || []).map((a) => a.imagePrompt).find(Boolean) || c.title || '';
+      const headline = (c.title || camp.goal || '').replace(/["\n]/g, ' ').trim().slice(0, 42);
+      const imgPrompt = buildCampImagePrompt(scene, headline, brandName, colorStr, vibe, tagline);
+      const imageSlot = `<div class="camp-image" data-prompt="${esc(imgPrompt)}"${logo ? ` data-logo="${esc(logo)}"` : ''}><div class="camp-image-ph">✦ Generating image…</div></div>`;
       return `<div class="camp-card"><div class="camp-card-title">${esc(c.title || ('Concept ' + (i + 1)))}</div>${imageSlot}${assets}</div>`;
     }).join('');
-    el.querySelectorAll('.camp-copy').forEach(b => b.addEventListener('click', () => {
+    el.querySelectorAll('.camp-copy').forEach((b) => b.addEventListener('click', () => {
       try { navigator.clipboard.writeText(b.dataset.copy); showToast('Caption copied'); } catch (_) {}
     }));
     // Stagger the calls so Pollinations isn't hit by all concepts at once.
     [...el.querySelectorAll('.camp-image')].forEach((slot, i) => setTimeout(() => genCampaignImage(slot, 0), i * 1300));
   }
 
-  // Render a concept's AI image prompt into a real image via Pollinations (free).
-  // Auto-retries once, then offers a manual retry (the free service can be flaky).
+  // Render a concept's brand-aware prompt into a real image via Pollinations (free),
+  // overlay the brand logo if available. Auto-retries, then offers a manual retry.
   async function genCampaignImage(slot, attempt) {
     const prompt = (slot.dataset.prompt || '').trim();
     if (!prompt) { slot.style.display = 'none'; return; }
+    const logo = slot.dataset.logo || '';
     try {
-      const { imageUrl } = await api('/api/generate-image', { method: 'POST', body: JSON.stringify({ prompt: prompt + '. Clean, professional, on-brand, no text, no words.' }) });
+      const { imageUrl } = await api('/api/generate-image', { method: 'POST', body: JSON.stringify({ prompt }) });
       if (!imageUrl) throw new Error('empty');
-      slot.innerHTML = `<img src="${imageUrl}" alt="" loading="lazy">`;
+      slot.innerHTML = `<img src="${imageUrl}" alt="" loading="lazy">` +
+        (logo ? `<img class="camp-image-logo" src="${esc(logo)}" alt="" onerror="this.remove()">` : '');
     } catch (_) {
       if (attempt < 2) { await new Promise(r => setTimeout(r, 1800)); return genCampaignImage(slot, attempt + 1); }
       slot.innerHTML = `<button type="button" class="camp-img-retry">↻ Retry image</button>`;

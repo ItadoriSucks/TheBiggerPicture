@@ -24,7 +24,9 @@ cd dna-studio
 # .env: LLM_PROVIDER=openai, OPENAI_BASE_URL=https://api.groq.com/openai/v1,
 #       OPENAI_MODEL=llama-3.3-70b-versatile, OPENAI_API_KEY=<your free Groq key>
 # patch src/lib/llm/providers/openai.ts to pass `baseURL` from OPENAI_BASE_URL,
-# remap the app port to 3100 in docker-compose.yml, then:
+# remap the app port to 3100 in docker-compose.yml,
+# and patch src/lib/brand-dna/crawler.ts: change page.goto's waitUntil from
+#   "networkidle" (which hangs on modern sites) to "domcontentloaded", then:
 docker compose up -d --build
 ```
 

@@ -76,18 +76,28 @@ async function readSSE(res) {
 
 async function postSSE(path, body, label) {
   const cookie = await ensureSession();
-  const res = await fetch(`${DNA_URL}${path}`, {
-    method: 'POST',
-    headers: { 'content-type': 'application/json', cookie },
-    body: JSON.stringify(body),
-  });
-  if (res.status === 401) { _cookie = null; throw new Error('DNA Studio session expired — please retry.'); }
-  if (!res.ok) throw new Error(`${label} failed (HTTP ${res.status}).`);
-  const events = await readSSE(res);
-  const complete = events.find((e) => e.type === 'complete');
-  const error = events.find((e) => e.type === 'error');
-  if (!complete) throw new Error(error ? error.message : `${label} did not complete.`);
-  return complete;
+  const ac = new AbortController();
+  const timer = setTimeout(() => ac.abort(), 120000); // safety: never hang forever
+  try {
+    const res = await fetch(`${DNA_URL}${path}`, {
+      method: 'POST',
+      signal: ac.signal,
+      headers: { 'content-type': 'application/json', cookie },
+      body: JSON.stringify(body),
+    });
+    if (res.status === 401) { _cookie = null; throw new Error('DNA Studio session expired — please retry.'); }
+    if (!res.ok) throw new Error(`${label} failed (HTTP ${res.status}).`);
+    const events = await readSSE(res);
+    const complete = events.find((e) => e.type === 'complete');
+    const error = events.find((e) => e.type === 'error');
+    if (!complete) throw new Error(error ? error.message : `${label} did not complete.`);
+    return complete;
+  } catch (e) {
+    if (e && e.name === 'AbortError') throw new Error(`${label} timed out.`);
+    throw e;
+  } finally {
+    clearTimeout(timer);
+  }
 }
 
 async function analyzeBrand(url) {

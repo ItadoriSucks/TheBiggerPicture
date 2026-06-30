@@ -9,7 +9,7 @@
 const express = require('express');
 const router = express.Router();
 
-const TIMEOUT_MS = 45000;                 // Pollinations (flux) can take 10-30s
+const TIMEOUT_MS = 60000;                 // Pollinations (flux) free tier can be slow/variable
 const MAX_BYTES  = 10 * 1024 * 1024;      // 10 MB cap
 const WIDTH = 640, HEIGHT = 800;          // ~4:5 portrait, matches the 400x500 poster
 

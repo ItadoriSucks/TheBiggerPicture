@@ -26,6 +26,7 @@ app.use('/api/comments', require('./routes/comments'));
 app.use('/api/site', require('./routes/site'));
 app.use('/api/generate', require('./routes/generate'));
 app.use('/api/generate-image', require('./routes/generate-image'));
+app.use('/api/campaign', require('./routes/campaign'));
 
 // Uploaded design images
 app.use('/uploads', express.static(UPLOADS_DIR));

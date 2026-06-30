@@ -86,6 +86,17 @@ db.exec(`
     created_at      INTEGER NOT NULL,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
   );
+
+  CREATE TABLE IF NOT EXISTS campaigns (
+    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id    INTEGER NOT NULL,
+    brand_name TEXT NOT NULL DEFAULT '',
+    url        TEXT NOT NULL DEFAULT '',
+    goal       TEXT NOT NULL DEFAULT '',
+    data       TEXT NOT NULL DEFAULT '{}',
+    created_at INTEGER NOT NULL,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 // --- Lightweight migrations: add columns to existing databases if missing ---

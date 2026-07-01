@@ -1899,16 +1899,14 @@
     showToast('Request submitted! Enjoy your free trial.');
   });
 
+  // Show exactly one page container and hide every other one (prevents pages stacking).
+  function showPage(id) {
+    document.querySelectorAll('.page, .demo-page').forEach((p) => { p.hidden = (p.id !== id); });
+  }
+
   // ---- Demo Mode ----
-  document.getElementById('demo-mode-btn').addEventListener('click', () => {
-    document.getElementById('page-create').hidden = true;
-    document.getElementById('page-results').hidden = true;
-    document.getElementById('page-demo').hidden = false;
-  });
-  document.getElementById('demo-back').addEventListener('click', () => {
-    document.getElementById('page-demo').hidden = true;
-    document.getElementById('page-create').hidden = false;
-  });
+  document.getElementById('demo-mode-btn').addEventListener('click', () => showPage('page-demo'));
+  document.getElementById('demo-back').addEventListener('click', () => showPage('page-create'));
   document.getElementById('demo-launch-btn').addEventListener('click', () => {
     const bizName = document.getElementById('demo-biz-name').value.trim();
     const bizType = document.getElementById('demo-biz-type').value;
@@ -1919,7 +1917,6 @@
     state.purpose = campaign;
     const typeLabels = { restaurant: 'restaurant', retail: 'boutique', salon: 'salon', gym: 'gym', bakery: 'bakery', bar: 'bar', service: 'local business', other: 'business' };
     state.prompt = `${bizName} - ${typeLabels[bizType]} running a ${campaign} campaign. Local, authentic, community-driven.`;
-    document.getElementById('page-demo').hidden = true;
     runGeneration();
   });
 
@@ -2023,8 +2020,7 @@
     ds._editingVariant = -1; boardEls = []; boardSel = null; ds._savedImg = null;
     const overlay = document.getElementById('loading');
     const status  = document.getElementById('loading-status');
-    document.getElementById('page-create').hidden = true;
-    document.getElementById('page-results').hidden = true;
+    document.querySelectorAll('.page, .demo-page').forEach((p) => { p.hidden = true; });
     overlay.hidden = false;
     setStep(2);
 
@@ -2109,9 +2105,7 @@
   }
 
   function showResults() {
-    document.getElementById('page-create').hidden  = true;
-    document.getElementById('page-demo').hidden    = true;
-    document.getElementById('page-results').hidden = false;
+    showPage('page-results');
     setStep(3);
     state.selected = 0;
     renderPreview();
@@ -2140,8 +2134,7 @@
 
   // ---- Back ----
   document.getElementById('back-btn').addEventListener('click', () => {
-    document.getElementById('page-create').hidden  = false;
-    document.getElementById('page-results').hidden = true;
+    showPage('page-create');
     setStep(1);
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
@@ -2724,15 +2717,13 @@
     buildLayoutGrid();
     switchEditorTab(tab || 'text');
 
-    document.getElementById('page-results').hidden = true;
-    document.getElementById('page-edit').hidden = false;
+    showPage('page-edit');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     updateEditorPreview();
   }
 
   function closeEditor() {
-    document.getElementById('page-edit').hidden = true;
-    document.getElementById('page-results').hidden = false;
+    showPage('page-results');
     renderPreview();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
@@ -3249,8 +3240,7 @@
     state.businessName = state.brand.name; state.siteCopy = null;
     updateBrandCard();
     refreshAuthUI();
-    document.querySelectorAll('.page').forEach(p => p.hidden = true);
-    document.getElementById('page-create').hidden = false;
+    showPage('page-create');
     window.scrollTo({ top: 0, behavior: 'smooth' });
     showToast('Logged out.');
   });
@@ -3461,8 +3451,7 @@
   // ---- My Page ----
   function openAccount() {
     if (!currentUser) { openAuth('login'); return; }
-    document.querySelectorAll('.page').forEach(p => p.hidden = true);
-    document.getElementById('page-account').hidden = false;
+    showPage('page-account');
     document.getElementById('account-name-display').textContent = currentUser.displayName || 'My Page';
     document.getElementById('account-email').textContent = currentUser.email;
     document.getElementById('account-profile-edit').hidden = true;
@@ -3627,7 +3616,6 @@
     let saved = {};
     try { saved = JSON.parse(d.stateJson || '{}'); } catch (_) {}
     restoreDesignState(saved);
-    document.querySelectorAll('.page').forEach(p => p.hidden = true);
     showResults();
     if (typeof saved.selected === 'number' && saved.selected !== 0) { state.selected = saved.selected; renderPreview(); }
   }
@@ -3653,8 +3641,7 @@
   });
 
   document.getElementById('account-back-btn').addEventListener('click', () => {
-    document.getElementById('page-account').hidden = true;
-    document.getElementById('page-create').hidden = false;
+    showPage('page-create');
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
   document.getElementById('mypage-nav-btn').addEventListener('click', openAccount);
@@ -3884,14 +3871,12 @@
       !document.getElementById('page-results').hidden ? 'results' :
       !document.getElementById('page-edit').hidden    ? 'edit'    :
       !document.getElementById('page-account').hidden ? 'account' : 'create';
-    document.querySelectorAll('.page').forEach(p => p.hidden = true);
-    document.getElementById('page-feedback').hidden = false;
+    showPage('page-feedback');
     fbSyncCompose();
     fbRender();
     window.scrollTo({ top: 0, behavior: 'smooth' });
     document.getElementById('feedback-back-btn').onclick = () => {
-      document.getElementById('page-feedback').hidden = true;
-      document.getElementById('page-' + prev).hidden = false;
+      showPage('page-' + prev);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
   }
@@ -3904,15 +3889,13 @@
       !document.getElementById('page-results').hidden ? 'results' :
       !document.getElementById('page-account').hidden ? 'account' :
       !document.getElementById('page-edit').hidden    ? 'edit'    : 'create';
-    document.querySelectorAll('.page').forEach(p => p.hidden = true);
-    document.getElementById('page-campaigns').hidden = false;
+    showPage('page-campaigns');
     const urlIn = document.getElementById('camp-url');
     if (!urlIn.value && state.brand && state.brand.website) urlIn.value = state.brand.website;
     window.scrollTo({ top: 0, behavior: 'smooth' });
     loadSavedCampaigns();
     document.getElementById('campaigns-back-btn').onclick = () => {
-      document.getElementById('page-campaigns').hidden = true;
-      document.getElementById('page-' + prev).hidden = false;
+      showPage('page-' + prev);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     };
   }
